@@ -62,14 +62,16 @@ export default function DashboardPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
-
       <main className="flex-1">
         {/* Page Header */}
         <div className="border-b bg-muted/40">
           <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">Welcome back!</h1>
-            <p className="text-muted-foreground text-lg">Here's what's happening with your loan search</p>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">
+              Welcome back!
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              Here's what's happening with your loan search
+            </p>
           </div>
         </div>
 
@@ -77,18 +79,25 @@ export default function DashboardPage() {
           {/* Stats Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {stats.map((stat) => (
-              <Card key={stat.title} className="hover:shadow-md transition-shadow">
+              <Card
+                key={stat.title}
+                className="hover:shadow-md transition-shadow"
+              >
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between mb-4">
                     <stat.icon className={`h-8 w-8 ${stat.color}`} />
                     <Button variant="ghost" size="sm" asChild>
-                      <Link href={stat.href}>View</Link>
+                      <Link to={stat.href}>View</Link>
                     </Button>
                   </div>
                   <div>
                     <p className="text-3xl font-bold mb-1">{stat.value}</p>
-                    <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      {stat.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {stat.description}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -107,7 +116,10 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="space-y-4">
                   {recentActivity.map((activity, idx) => (
-                    <div key={idx} className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0">
+                    <div
+                      key={idx}
+                      className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0"
+                    >
                       <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center shrink-0">
                         {activity.action === "Compared" ? (
                           <TrendingUp className="h-5 w-5 text-muted-foreground" />
@@ -120,14 +132,22 @@ export default function DashboardPage() {
                       <div className="flex-1">
                         <p className="text-sm font-medium">
                           {activity.action}{" "}
-                          <span className="text-muted-foreground">{activity.loans.length > 1 ? "loans" : "loan"}</span>
+                          <span className="text-muted-foreground">
+                            {activity.loans.length > 1 ? "loans" : "loan"}
+                          </span>
                         </p>
                         {activity.loans.map((loan, loanIdx) => (
-                          <Badge key={loanIdx} variant="secondary" className="mt-1 mr-1">
+                          <Badge
+                            key={loanIdx}
+                            variant="secondary"
+                            className="mt-1 mr-1"
+                          >
                             {loan}
                           </Badge>
                         ))}
-                        <p className="text-xs text-muted-foreground mt-2">{activity.date}</p>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {activity.date}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -141,32 +161,52 @@ export default function DashboardPage() {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button asChild className="w-full justify-start bg-transparent" variant="outline">
-                  <Link href="/schemes">
+                <Button
+                  asChild
+                  className="w-full justify-start bg-transparent"
+                  variant="outline"
+                >
+                  <Link to="/schemes">
                     <Eye className="h-4 w-4 mr-2" />
                     Browse All Loan Schemes
                   </Link>
                 </Button>
-                <Button asChild className="w-full justify-start bg-transparent" variant="outline">
-                  <Link href="/compare">
+                <Button
+                  asChild
+                  className="w-full justify-start bg-transparent"
+                  variant="outline"
+                >
+                  <Link to="/compare">
                     <TrendingUp className="h-4 w-4 mr-2" />
                     Start New Comparison
                   </Link>
                 </Button>
-                <Button asChild className="w-full justify-start bg-transparent" variant="outline">
-                  <Link href="/watchlist">
+                <Button
+                  asChild
+                  className="w-full justify-start bg-transparent"
+                  variant="outline"
+                >
+                  <Link to="/watchlist">
                     <Heart className="h-4 w-4 mr-2" />
                     View Watchlist
                   </Link>
                 </Button>
-                <Button asChild className="w-full justify-start bg-transparent" variant="outline">
-                  <Link href="/currency">
+                <Button
+                  asChild
+                  className="w-full justify-start bg-transparent"
+                  variant="outline"
+                >
+                  <Link to="/currency">
                     <Download className="h-4 w-4 mr-2" />
                     Currency Converter
                   </Link>
                 </Button>
-                <Button asChild className="w-full justify-start bg-transparent" variant="outline">
-                  <Link href="/">
+                <Button
+                  asChild
+                  className="w-full justify-start bg-transparent"
+                  variant="outline"
+                >
+                  <Link to="/">
                     <MessageSquare className="h-4 w-4 mr-2" />
                     Chat with AI Assistant
                   </Link>
@@ -179,5 +219,5 @@ export default function DashboardPage() {
 
       <Footer />
     </div>
-  )
+  );
 }
