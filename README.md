@@ -1,4 +1,4 @@
-#CLICS Complete Frontend
+# CLICS Complete Frontend
  - Banking Schemes Explorer
 
 Add SchemesPage, SettingsPage, and WatchlistPage components with filtering and notification features
