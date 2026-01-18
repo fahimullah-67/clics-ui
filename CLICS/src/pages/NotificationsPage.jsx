@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { Button } from "../components/custom-ui/Button"
 import { Card } from "../components/custom-ui/Card"

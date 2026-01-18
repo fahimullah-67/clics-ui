@@ -19,11 +19,14 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white">
       <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4">
-
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white font-bold text-lg">
-            C
+          <div className="overflow-hidden flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white font-bold text-lg">
+            <img
+              src="/clicslogo.png"
+              alt="CLICS Logo"
+              className="h-full w-full "
+            />
           </div>
           <span className="font-bold text-xl">CLICS</span>
         </Link>
@@ -130,5 +133,5 @@ export function Header() {
         </div>
       )}
     </header>
-  )
+  );
 }

@@ -137,7 +137,7 @@ export default function SettingsPage() {
 
                 <div className="flex items-center gap-6 mb-6 pb-6 border-b">
                   <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-                    RK
+                    FU
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">

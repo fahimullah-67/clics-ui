@@ -9,8 +9,12 @@ export function Footer() {
           {/* About */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
-                C
+              <div className="overflow-hidden flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
+                <img 
+                src="/clicslogo.png" 
+                alt="CLICS Logo" 
+                className="h-full w-full "
+                />
               </div>
               <span className="font-bold text-lg">CLICS</span>
             </div>

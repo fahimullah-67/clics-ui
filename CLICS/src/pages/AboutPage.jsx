@@ -95,8 +95,8 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 py-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">About CLICS</h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl">
-            Centralized Loan Information & Comparison System - Making loan comparison transparent and accessible for all
-            Pakistanis
+            Centralized Loan Information & Comparison System - Making loan
+            comparison transparent and accessible for all Pakistanis
           </p>
         </div>
       </div>
@@ -106,23 +106,31 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold mb-6">What is CLICS?</h2>
           <div className="prose prose-lg max-w-none text-gray-600 dark:text-gray-400 leading-relaxed space-y-4">
             <p>
-              CLICS is an innovative web platform that aggregates loan information from all major Pakistani banks,
-              making it easy for borrowers to compare and find the best loan options for their needs.
+              CLICS is an innovative web platform that aggregates loan
+              information from all major Pakistani banks, making it easy for
+              borrowers to compare and find the best loan options for their
+              needs.
             </p>
             <p>
-              Our system automatically collects and verifies loan data from bank websites and PDFs, storing the original
-              sources with capture dates for complete transparency. Users can search, filter, and compare loans
-              side-by-side, with our AI-powered chatbot providing personalized recommendations backed by real evidence.
+              Our system automatically collects and verifies loan data from bank
+              websites and PDFs, storing the original sources with capture dates
+              for complete transparency. Users can search, filter, and compare
+              loans side-by-side, with our AI-powered chatbot providing
+              personalized recommendations backed by real evidence.
             </p>
             <p>
-              Whether you're looking for a personal loan, car loan, home loan, student loan, or business financing,
-              CLICS brings all the information you need to one place, saving you time and helping you make informed
-              financial decisions.
+              Whether you're looking for a personal loan, car loan, home loan,
+              student loan, or business financing, CLICS brings all the
+              information you need to one place, saving you time and helping you
+              make informed financial decisions.
             </p>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16" ref={featuresRef}>
+        <div
+          className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16"
+          ref={featuresRef}
+        >
           {features.map((feature, idx) => (
             <Card key={idx} className="border-2">
               <CardContent className="pt-6">
@@ -131,8 +139,12 @@ export default function AboutPage() {
                     <feature.icon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{feature.description}</p>
+                    <h3 className="font-semibold text-lg mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                      {feature.description}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -143,11 +155,15 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto mb-16">
           <h2 className="text-3xl font-bold mb-8 text-center">Our Team</h2>
           <p className="text-center text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
-            Meet the talented developers behind CLICS - students from the University of Mianwali
+            Meet the talented developers behind CLICS - students from the
+            University of Mianwali
           </p>
           <div className="grid md:grid-cols-3 gap-8" ref={teamRef}>
             {teamMembers.map((member, idx) => (
-              <Card key={idx} className="border-2 hover:shadow-lg transition-shadow">
+              <Card
+                key={idx}
+                className="border-2 hover:shadow-lg transition-shadow"
+              >
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center text-center">
                     <img
@@ -156,7 +172,9 @@ export default function AboutPage() {
                       className="w-24 h-24 rounded-full mb-4 object-cover border-4 border-blue-100 dark:border-blue-900"
                     />
                     <h3 className="font-bold text-xl mb-1">{member.name}</h3>
-                    <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-4">{member.role}</p>
+                    <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-4">
+                      {member.role}
+                    </p>
 
                     <div className="flex gap-2 mb-4">
                       <a
@@ -187,7 +205,9 @@ export default function AboutPage() {
                     </div>
 
                     <div className="w-full">
-                      <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2 uppercase">Skills</p>
+                      <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2 uppercase">
+                        Skills
+                      </p>
                       <div className="flex flex-wrap gap-2 justify-center">
                         {member.skills.map((skill, skillIdx) => (
                           <span
@@ -210,10 +230,12 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold mb-6">Technology</h2>
           <div className="text-gray-600 dark:text-gray-400 leading-relaxed space-y-4">
             <p>
-              CLICS is built using modern web technologies including React for the frontend, Node.js for the backend,
-              and MongoDB for data storage. We use advanced web scraping tools to collect loan data, vector databases
-              for semantic search, and large language models for our AI chatbot that provides evidence-backed
-              recommendations in both English and Urdu.
+              CLICS is built using modern web technologies including React for
+              the frontend, Node.js for the backend, and MongoDB for data
+              storage. We use advanced web scraping tools to collect loan data,
+              vector databases for semantic search, and large language models
+              for our AI chatbot that provides evidence-backed recommendations
+              in both English and Urdu.
             </p>
           </div>
         </div>
@@ -221,8 +243,12 @@ export default function AboutPage() {
         <div className="max-w-3xl mx-auto">
           <Card className="bg-blue-600 text-white border-0">
             <CardContent className="p-8 text-center">
-              <h2 className="text-2xl font-bold mb-2">Questions or Feedback?</h2>
-              <p className="mb-6 opacity-90">We'd love to hear from you. Get in touch with our team.</p>
+              <h2 className="text-2xl font-bold mb-2">
+                Questions or Feedback?
+              </h2>
+              <p className="mb-6 opacity-90">
+                We'd love to hear from you. Get in touch with our team.
+              </p>
               <a
                 href="/contact"
                 className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white disabled:pointer-events-none disabled:opacity-50 bg-white text-blue-600 hover:bg-gray-100 h-10 px-8"
@@ -234,5 +260,5 @@ export default function AboutPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }
