@@ -20,25 +20,26 @@ export default function ReviewsPage() {
   const [reviews, setReviews] = useState([
     {
       id: 1,
-      userName: "Priya Sharma",
-      userAvatar: "PS",
+      userName: "Fahim Ullah",
+      userAvatar: "FU",
       rating: 5,
       title: "Excellent Home Loan Service",
       comment:
         "SBI provided amazing service for my home loan. The process was smooth and the interest rates were competitive.",
       category: "bank",
-      bankName: "State Bank of India",
+      bankName: "State Bank of Pakistan",
       date: "2 days ago",
       helpful: 24,
       verified: true,
     },
     {
       id: 2,
-      userName: "Rahul Kumar",
-      userAvatar: "RK",
+      userName: "Sijjad Khan",
+      userAvatar: "SK",
       rating: 4,
       title: "Good Investment Scheme",
-      comment: "The PPF scheme has been great for long-term savings. Easy to manage and good returns.",
+      comment:
+        "The PPF scheme has been great for long-term savings. Easy to manage and good returns.",
       category: "scheme",
       schemeName: "Public Provident Fund",
       date: "5 days ago",
@@ -47,24 +48,26 @@ export default function ReviewsPage() {
     },
     {
       id: 3,
-      userName: "Anjali Verma",
-      userAvatar: "AV",
+      userName: "Abdullah",
+      userAvatar: "AB",
       rating: 3,
       title: "Average Experience",
-      comment: "HDFC service is okay but the waiting time for loan approval was quite long.",
+      comment:
+        "HBL service is okay but the waiting time for loan approval was quite long.",
       category: "bank",
-      bankName: "HDFC Bank",
+      bankName: "HBL Bank",
       date: "1 week ago",
       helpful: 12,
       verified: false,
     },
     {
       id: 4,
-      userName: "Vikram Singh",
-      userAvatar: "VS",
+      userName: "Aiman Ali",
+      userAvatar: "Aa",
       rating: 5,
       title: "Best Fixed Deposit Rates",
-      comment: "Highly recommend this FD scheme. Great interest rates and flexible tenure options.",
+      comment:
+        "Highly recommend this FD scheme. Great interest rates and flexible tenure options.",
       category: "scheme",
       schemeName: "Fixed Deposit",
       date: "2 weeks ago",
@@ -73,18 +76,19 @@ export default function ReviewsPage() {
     },
     {
       id: 5,
-      userName: "Neha Patel",
-      userAvatar: "NP",
+      userName: "Neha Akbar",
+      userAvatar: "NA",
       rating: 4,
       title: "Quick Loan Processing",
-      comment: "ICICI processed my personal loan within 48 hours. Very efficient service.",
+      comment:
+        "ALB processed my personal loan within 48 hours. Very efficient service.",
       category: "bank",
-      bankName: "ICICI Bank",
+      bankName: "ALB Bank",
       date: "3 weeks ago",
       helpful: 22,
       verified: true,
     },
-  ])
+  ]);
 
   const handleRatingClick = (rating) => {
     setNewReview((prev) => ({ ...prev, rating }))

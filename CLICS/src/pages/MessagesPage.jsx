@@ -14,58 +14,107 @@ export default function MessagesPage() {
   const [conversations, setConversations] = useState([
     {
       id: 1,
-      name: "Bank Support - SBI",
+      name: "Bank Support - HBL",
       lastMessage: "Your loan application has been approved",
       timestamp: "10:30 AM",
       unread: 2,
-      avatar: "SBI",
+      avatar: "HBL",
       online: true,
     },
     {
       id: 2,
-      name: "HDFC Customer Care",
+      name: "ABL Customer Care",
       lastMessage: "Thank you for your inquiry about home loans",
       timestamp: "Yesterday",
       unread: 0,
-      avatar: "HDFC",
+      avatar: "ABL",
       online: false,
     },
     {
       id: 3,
-      name: "ICICI Support",
+      name: "PK Support",
       lastMessage: "Your documents have been verified",
       timestamp: "2 days ago",
       unread: 1,
-      avatar: "ICICI",
+      avatar: "PK",
       online: true,
     },
     {
       id: 4,
-      name: "Advisor - Rajesh Kumar",
+      name: "Advisor - Fahim Ullah",
       lastMessage: "I can help you with investment schemes",
       timestamp: "3 days ago",
       unread: 0,
-      avatar: "RK",
+      avatar: "FU",
       online: false,
     },
-  ])
+  ]);
 
   // Mock messages for selected chat
   const [chatMessages, setChatMessages] = useState({
     1: [
-      { id: 1, sender: "them", text: "Hello! How can I help you today?", time: "10:00 AM" },
-      { id: 2, sender: "me", text: "I wanted to check the status of my loan application", time: "10:15 AM" },
-      { id: 3, sender: "them", text: "Let me check that for you...", time: "10:20 AM" },
-      { id: 4, sender: "them", text: "Your loan application has been approved", time: "10:30 AM" },
+      {
+        id: 1,
+        sender: "them",
+        text: "Hello! How can I help you today?",
+        time: "10:00 AM",
+      },
+      {
+        id: 2,
+        sender: "me",
+        text: "I wanted to check the status of my loan application",
+        time: "10:15 AM",
+      },
+      {
+        id: 3,
+        sender: "them",
+        text: "Let me check that for you...",
+        time: "10:20 AM",
+      },
+      {
+        id: 4,
+        sender: "them",
+        text: "Your loan application has been approved",
+        time: "10:30 AM",
+      },
     ],
     2: [
-      { id: 1, sender: "them", text: "Welcome to HDFC Customer Care", time: "Yesterday 2:00 PM" },
-      { id: 2, sender: "me", text: "I need information about home loans", time: "Yesterday 2:10 PM" },
-      { id: 3, sender: "them", text: "Thank you for your inquiry about home loans", time: "Yesterday 2:15 PM" },
+      {
+        id: 1,
+        sender: "them",
+        text: "Welcome to HBL Customer Care",
+        time: "Yesterday 2:00 PM",
+      },
+      {
+        id: 2,
+        sender: "me",
+        text: "I need information about home loans",
+        time: "Yesterday 2:10 PM",
+      },
+      {
+        id: 3,
+        sender: "them",
+        text: "Thank you for your inquiry about home loans",
+        time: "Yesterday 2:15 PM",
+      },
     ],
-    3: [{ id: 1, sender: "them", text: "Your documents have been verified", time: "2 days ago" }],
-    4: [{ id: 1, sender: "them", text: "I can help you with investment schemes", time: "3 days ago" }],
-  })
+    3: [
+      {
+        id: 1,
+        sender: "them",
+        text: "Your documents have been verified",
+        time: "2 days ago",
+      },
+    ],
+    4: [
+      {
+        id: 1,
+        sender: "them",
+        text: "I can help you with investment schemes",
+        time: "3 days ago",
+      },
+    ],
+  });
 
   const handleSendMessage = () => {
     if (!messageInput.trim() || !selectedChat) return

@@ -9,7 +9,7 @@ import ComparePage from "./pages/ComparePage"
 import BanksPage from "./pages/BanksPage"
 import WatchlistPage from "./pages/WatchlistPage"
 import DashboardPage  from "./pages/DashboardPage"
-import  CurrencyPage  from "./pages/CurrencyPage"
+import CurrencyPage from "./pages/CurrencyPage1";
 import AdminPage from "./pages/AdminPage"
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
