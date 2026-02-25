@@ -7,12 +7,13 @@ import { Button } from "../components/custom-ui/Button"
 import { Input } from "../components/custom-ui/Input"
 import { Eye, EyeOff, UserPlus } from "lucide-react"
 import gsap from "gsap"
+import api from "../utils/axios";
 
 export default function RegisterPage() {
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" })
-
+  const [error, setError] = useState(null);
   useEffect(() => {
     gsap.fromTo(
       ".register-card",
@@ -22,13 +23,28 @@ export default function RegisterPage() {
   }, [])
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!")
-      return
+      alert("Passwords do not match!");
+      return;
     }
-    console.log("Register:", formData)
-    navigate("/dashboard")
+    try {
+      const res = api.post("/user/register", {
+        username: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      console.log("Registration response:", res.formData);
+      navigate("/login");
+    } catch (error) {
+      console.error(
+        "Registration error/UI:",
+        error.response?.data || error.message,
+      );
+
+      setError(error.response?.data?.message || "Registration failed");
+    }
   }
 
   return (
@@ -41,31 +57,43 @@ export default function RegisterPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Full Name
+              </label>
               <Input
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="John Doe"
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                placeholder="Fahim Ullah"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Email
+              </label>
               <Input
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 placeholder="your.email@example.com"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Password
+              </label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   placeholder="Create a password"
                   required
                 />
@@ -74,33 +102,48 @@ export default function RegisterPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Confirm Password</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Confirm Password
+              </label>
               <Input
                 type="password"
                 value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, confirmPassword: e.target.value })
+                }
                 placeholder="Confirm your password"
                 required
               />
             </div>
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+            {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
+            <Button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700"
+            >
               <UserPlus className="w-4 h-4 mr-2" />
               Create Account
             </Button>
           </form>
           <p className="text-center text-sm text-slate-600 mt-4">
             Already have an account?{" "}
-            <Link to="/login" className="text-blue-600 hover:underline font-semibold">
+            <Link
+              to="/login"
+              className="text-blue-600 hover:underline font-semibold"
+            >
               Sign in
             </Link>
           </p>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
