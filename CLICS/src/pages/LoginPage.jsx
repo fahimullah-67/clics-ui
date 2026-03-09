@@ -53,7 +53,7 @@ export default function LoginPage() {
         email: formData.email,
         password: formData.password,
       });
-      login(res.data.user);
+      login(res.data.data);
       navigate("/compare");
     } catch (error) {
       console.error("Login failed:", error.response?.data || error.message);
