@@ -19,6 +19,8 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errorMsg, setErrorMsg] = useState("");
+  const { user, loading, login } = useAuth();
+
   useEffect(() => {
     gsap.fromTo(
       ".login-card",
@@ -26,6 +28,20 @@ export default function LoginPage() {
       { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.7)" },
     );
   }, []);
+
+
+  if (user) {
+    console.log("User is already logged in, redirecting to home...");
+    navigate("/compare");
+  }
+
+  useEffect(() => {
+    if (!loading && user) {
+      console.log("User is already logged in, redirecting to home...");
+      navigate("/");
+    }
+  }, [user, loading, navigate]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,20 +53,15 @@ export default function LoginPage() {
         email: formData.email,
         password: formData.password,
       });
-      navigate("/");
+      login(res.data.user);
+      navigate("/compare");
     } catch (error) {
       console.error("Login failed:", error.response?.data || error.message);
       setErrorMsg(error.response?.data?.message || "Invalid credentials");
     }
   };
 
-const { user, loading } = useAuth();
 
-useEffect(() => {
-  if (!loading && user) {
-    navigate("/");
-  }
-}, [user, loading, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex items-center justify-center px-4">
