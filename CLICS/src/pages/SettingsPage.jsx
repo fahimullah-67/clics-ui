@@ -42,6 +42,15 @@ export default function SettingsPage() {
      }
    }, [user]);
 
+    const handleLogout = async () => {
+      try {
+        await api.post("/user-logout");
+        logout();
+      } catch (error) {
+        console.error("Error logging out:", error);
+      }
+    };
+
    const [passwordData, setPasswordData] = useState({
      currentPassword: "",
      newPassword: "",
@@ -161,11 +170,17 @@ export default function SettingsPage() {
 
 
   if (loading) {
-    return <div className="p-10 text-center">Loading...</div>;
+    return (
+      <div className="p-10 text-center animate-accordion-down">Loading...</div>
+    );
   }
 
   if (!user) {
-    return <div className="p-10 text-center">User not found</div>;
+    return (
+      <div className="p-10 text-center animate-accordion-down">
+        User not found
+      </div>
+    );
   }
 
   return (
@@ -210,7 +225,12 @@ export default function SettingsPage() {
 
                 <div className="flex items-center gap-6 mb-6 pb-6 border-b">
                   <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-                    FU
+                    {profileData.fullName
+                      ? profileData.fullName
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                      : "US"}
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">
@@ -223,6 +243,16 @@ export default function SettingsPage() {
                       className="mt-2 bg-transparent"
                     >
                       Change Avatar
+                    </Button>
+                  </div>
+                  <div className="ml-50">
+                    <Button
+                      size="default"
+                      variant="default"
+                      className="mt-2 "
+                      onClick={handleLogout}
+                    >
+                      Logout
                     </Button>
                   </div>
                 </div>
