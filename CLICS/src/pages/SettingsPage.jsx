@@ -8,17 +8,46 @@ import { Button } from "../components/custom-ui/Button"
 import { Checkbox } from "../components/custom-ui/Checkbox"
 import { Select } from "../components/custom-ui/Select"
 import { Badge } from "../components/custom-ui/Badge"
+import { useAuth } from "../context/AuthProvider";
+import api from "../utils/axios";
+import { useEffect } from "react";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile")
+
+  const { user, logout, loading } = useAuth();
+
   const [profileData, setProfileData] = useState({
-    fullName: "Fahim Ullah",
-    email: "fahimullah446.@email.com",
-    phone: "+92 319 9036170",
-    dateOfBirth: "2005-25-03",
-    address: "123 Kundian Chashama, Mianwali",
+    fullName: "",
+    email: "",
+    phone: "",
+    dateOfBirth: "",
+    address: {},
     pincode: "42000",
   });
+
+   useEffect(() => {
+     if (user) {
+       console.log("User data:", user); // Debug log
+       setProfileData({
+         fullName: user.username || "",
+         email: user.email || "",
+         phone: user.phone || "",
+         dateOfBirth: user.dateOfBirth
+           ? new Date(user.dateOfBirth).toISOString().split("T")[0]
+           : "",
+         address: user.address?.street || "",
+         pincode: user.pincode || "",
+       });
+     }
+   }, [user]);
+
+   const [passwordData, setPasswordData] = useState({
+     currentPassword: "",
+     newPassword: "",
+     confirmPassword: "",
+   });
+
 
   const [preferences, setPreferences] = useState({
     emailNotifications: true,
@@ -36,7 +65,7 @@ export default function SettingsPage() {
     twoFactorAuth: false,
     loginAlerts: true,
     sessionTimeout: "30",
-  })
+  });
 
   const [sessions] = useState([
     {
@@ -63,15 +92,50 @@ export default function SettingsPage() {
   ]);
 
   const [activities] = useState([
-    { id: 1, action: "Password changed", timestamp: "2024-01-15 10:30 AM", status: "success" },
-    { id: 2, action: "Profile updated", timestamp: "2024-01-14 03:45 PM", status: "success" },
-    { id: 3, action: "Failed login attempt", timestamp: "2024-01-12 11:20 PM", status: "warning" },
-    { id: 4, action: "Loan application submitted", timestamp: "2024-01-10 09:15 AM", status: "success" },
-  ])
+    {
+      id: 1,
+      action: "Password changed",
+      timestamp: "2024-01-15 10:30 AM",
+      status: "success",
+    },
+    {
+      id: 2,
+      action: "Profile updated",
+      timestamp: "2024-01-14 03:45 PM",
+      status: "success",
+    },
+    {
+      id: 3,
+      action: "Failed login attempt",
+      timestamp: "2024-01-12 11:20 PM",
+      status: "warning",
+    },
+    {
+      id: 4,
+      action: "Loan application submitted",
+      timestamp: "2024-01-10 09:15 AM",
+      status: "success",
+    },
+  ]);
 
-  const handleProfileUpdate = () => {
-    alert("Profile updated successfully!")
-  }
+  const handleProfileUpdate = async () => {
+    try {
+      const res = await api.put("/update-user-profile", {
+        username: profileData.fullName,
+        email: profileData.email,
+        phone: profileData.phone,
+        address: {
+          street: profileData.address,
+        },
+        dateOfBirth: profileData.dateOfBirth,
+      });
+
+      alert("Profile updated successfully");
+    } catch (error) {
+      console.error(error);
+      alert("Profile update failed");
+    }
+  };
 
   const handlePreferencesUpdate = () => {
     alert("Preferences saved successfully!")
@@ -94,6 +158,15 @@ export default function SettingsPage() {
     { id: "privacy", label: "Privacy", icon: "🛡️" },
     { id: "notifications", label: "Notifications", icon: "🔔" },
   ]
+
+
+  if (loading) {
+    return <div className="p-10 text-center">Loading...</div>;
+  }
+
+  if (!user) {
+    return <div className="p-10 text-center">User not found</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
