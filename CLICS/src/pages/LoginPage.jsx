@@ -87,9 +87,19 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Password
-              </label>
+              <div className="flex justify-between items-center mb-1">
+                <label className="text-sm font-medium text-slate-700">
+                  Password
+                </label>
+
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-blue-600 hover:underline"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
+
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
@@ -100,9 +110,7 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                   required
                 />
-                {errorMsg && (
-                  <p className="text-red-500 text-sm mt-1">{errorMsg}</p>
-                )}
+
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
@@ -115,6 +123,10 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
+
+              {errorMsg && (
+                <p className="text-red-500 text-sm mt-1">{errorMsg}</p>
+              )}
             </div>
             <Button
               type="submit"
