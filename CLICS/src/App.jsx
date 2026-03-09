@@ -21,6 +21,8 @@ import LoanCheckerPage from "./pages/LoanCheckerPage"
 import NotificationsPage from "./pages/NotificationsPage"
 import HelpPage from "./pages/HelpPage"
 import SettingsPage from "./pages/SettingsPage"
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 function App() {
   return (
@@ -36,8 +38,12 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/currency" element={<CurrencyPage />} />
         <Route path="/admin" element={<AdminPage />} />
+
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="/register" element={<RegisterPage />} />
+
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/messages" element={<MessagesPage />} />
@@ -50,7 +56,7 @@ function App() {
       <Footer />
       <Chatbot />
     </div>
-  )
+  );
 }
 
 export default App
