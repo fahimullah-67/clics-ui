@@ -13,7 +13,7 @@ import api from "../utils/axios";
 import { useEffect } from "react";
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState("profile")
+  const [activeTab, setActiveTab] = useState("profile");
 
   const { user, logout, loading } = useAuth();
 
@@ -26,37 +26,36 @@ export default function SettingsPage() {
     pincode: "42000",
   });
 
-   useEffect(() => {
-     if (user) {
-       console.log("User data:", user); // Debug log
-       setProfileData({
-         fullName: user.username || "",
-         email: user.email || "",
-         phone: user.phone || "",
-         dateOfBirth: user.dateOfBirth
-           ? new Date(user.dateOfBirth).toISOString().split("T")[0]
-           : "",
-         address: user.address?.street || "",
-         pincode: user.pincode || "",
-       });
-     }
-   }, [user]);
+  useEffect(() => {
+    if (user) {
+      console.log("User data:", user); // Debug log
+      setProfileData({
+        fullName: user.username || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        dateOfBirth: user.dateOfBirth
+          ? new Date(user.dateOfBirth).toISOString().split("T")[0]
+          : "",
+        address: user.address?.street || "",
+        pincode: user.pincode || "",
+      });
+    }
+  }, [user]);
 
-    const handleLogout = async () => {
-      try {
-        await api.post("/user-logout");
-        logout();
-      } catch (error) {
-        console.error("Error logging out:", error);
-      }
-    };
+  const handleLogout = async () => {
+    try {
+      await api.post("/user-logout");
+      logout();
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
 
-   const [passwordData, setPasswordData] = useState({
-     currentPassword: "",
-     newPassword: "",
-     confirmPassword: "",
-   });
-
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
 
   const [preferences, setPreferences] = useState({
     emailNotifications: true,
@@ -147,18 +146,40 @@ export default function SettingsPage() {
   };
 
   const handlePreferencesUpdate = () => {
-    alert("Preferences saved successfully!")
-  }
+    alert("Preferences saved successfully!");
+  };
 
   const handlePasswordChange = () => {
-    alert("Password changed successfully!")
-  }
+    try {
+      if (passwordData.newPassword !== passwordData.confirmPassword) {
+        alert("New passwords do not match!");
+        return;
+      }
+      if (passwordData.newPassword.length < 6) {
+        alert("New password must be at least 6 characters long!");
+        return;
+      }
+      if (passwordData.currentPassword === passwordData.newPassword) {
+        alert("New password cannot be the same as current password!");
+        return;
+      }
+      // Simulate API call to change password
+      api.put("/change_password", {
+        oldPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
+      alert("Password changed successfully!");
+    } catch (error) {
+      console.error("Error changing password:", error);
+      alert("Failed to change password", error.message);
+    }
+  };
 
   const handleRevokeSession = (sessionId) => {
     if (window.confirm("Are you sure you want to revoke this session?")) {
-      alert(`Session ${sessionId} revoked!`)
+      alert(`Session ${sessionId} revoked!`);
     }
-  }
+  };
 
   const tabs = [
     { id: "profile", label: "Profile", icon: "👤" },
@@ -166,8 +187,7 @@ export default function SettingsPage() {
     { id: "security", label: "Security", icon: "🔒" },
     { id: "privacy", label: "Privacy", icon: "🛡️" },
     { id: "notifications", label: "Notifications", icon: "🔔" },
-  ]
-
+  ];
 
   if (loading) {
     return (
@@ -437,19 +457,49 @@ export default function SettingsPage() {
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="currentPassword">Current Password</Label>
-                    <Input id="currentPassword" type="password" />
+                    <Input
+                      id="currentPassword"
+                      type="password"
+                      value={passwordData.currentPassword}
+                      onChange={(e) =>
+                        setPasswordData({
+                          ...passwordData,
+                          currentPassword: e.target.value,
+                        })
+                      }
+                    />
                   </div>
 
                   <div>
                     <Label htmlFor="newPassword">New Password</Label>
-                    <Input id="newPassword" type="password" />
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      value={passwordData.newPassword}
+                      onChange={(e) =>
+                        setPasswordData({
+                          ...passwordData,
+                          newPassword: e.target.value,
+                        })
+                      }
+                    />
                   </div>
 
                   <div>
                     <Label htmlFor="confirmPassword">
                       Confirm New Password
                     </Label>
-                    <Input id="confirmPassword" type="password" />
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={passwordData.confirmPassword}
+                      onChange={(e) =>
+                        setPasswordData({
+                          ...passwordData,
+                          confirmPassword: e.target.value,
+                        })
+                      }
+                    />
                   </div>
                 </div>
 
