@@ -110,12 +110,12 @@ export function Chatbot() {
     return (
       <Button
         size="lg"
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50 bg-gradient-to-br from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
+        className="fixed bottom-15 right-20 h-20 w-20 rounded-full shadow-lg z-50 bg-gradient-to-br from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
         onClick={() => setIsOpen(true)}
       >
-        <MessageSquare className="h-6 w-6" />
+        <MessageSquare className="h-20 w-20" />
       </Button>
-    )
+    );
   }
 
   return (
