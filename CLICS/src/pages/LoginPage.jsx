@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+import { useAuth } from "../context/AuthProvider";
 import { useNavigate, Link } from "react-router-dom";
 import {
   Card,
@@ -43,6 +43,14 @@ export default function LoginPage() {
       setErrorMsg(error.response?.data?.message || "Invalid credentials");
     }
   };
+
+const { user, loading } = useAuth();
+
+useEffect(() => {
+  if (!loading && user) {
+    navigate("/");
+  }
+}, [user, loading, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex items-center justify-center px-4">
