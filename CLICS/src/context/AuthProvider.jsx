@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
         console.log(" Checking authentication...");
         const res = await api.get("/current-user");
         setUser(res.data.data);
-        console.log(user);
+        console.log("CURRENT USER", user);
         
       } catch (error) {
         setUser(null);
