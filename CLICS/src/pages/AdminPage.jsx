@@ -1,11 +1,23 @@
-import { useState } from "react"
-import { Header } from "../components/header"
-import { Footer } from "../components/footer"
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
-import { Badge } from "../components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+// import { useAuth } from "../context/AuthProvider";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Database,
   RefreshCw,
@@ -18,11 +30,24 @@ import {
   Settings,
   Play,
   Pause,
-} from "lucide-react"
-import  {mockLoans}  from "../lib/mock-data"
+  Navigation,
+} from "lucide-react";
+import { mockLoans } from "../lib/mock-data";
+import { useAuth } from "../context/AuthProvider";
 
 export default function AdminDashboard() {
-  const [isScraperRunning, setIsScraperRunning] = useState(false)
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  if (!user) {
+    return navigate("/login");
+    // <Navigation to="/login" />;
+  }
+  if (user.role !== "admin") {
+    return navigate("/");
+  }
+
+  const [isScraperRunning, setIsScraperRunning] = useState(false);
 
   const stats = [
     {
@@ -53,7 +78,7 @@ export default function AdminDashboard() {
       icon: Users,
       color: "text-purple-600",
     },
-  ]
+  ];
 
   const pendingReviews = [
     {
@@ -83,7 +108,7 @@ export default function AdminDashboard() {
       captureDate: "2025-01-14",
       changes: "Processing fee changed",
     },
-  ]
+  ];
 
   const scraperLogs = [
     {
@@ -114,35 +139,37 @@ export default function AdminDashboard() {
       records: 0,
       message: "Connection timeout - will retry",
     },
-  ]
+  ];
 
   const handleApprove = (id) => {
-    console.log("Approving record:", id)
-    alert(`Record ${id} approved successfully!`)
-  }
+    console.log("Approving record:", id);
+    alert(`Record ${id} approved successfully!`);
+  };
 
   const handleReject = (id) => {
-    console.log("Rejecting record:", id)
-    alert(`Record ${id} rejected`)
-  }
+    console.log("Rejecting record:", id);
+    alert(`Record ${id} rejected`);
+  };
 
   const toggleScraper = () => {
-    setIsScraperRunning(!isScraperRunning)
-    alert(isScraperRunning ? "Scraper stopped" : "Scraper started")
-  }
+    setIsScraperRunning(!isScraperRunning);
+    alert(isScraperRunning ? "Scraper stopped" : "Scraper started");
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
-
       <main className="flex-1">
         {/* Page Header */}
         <div className="border-b bg-muted/40">
           <div className="container mx-auto px-4 py-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold mb-2">Admin Dashboard</h1>
-                <p className="text-muted-foreground text-lg">Manage loan data and system operations</p>
+                <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                  Admin Dashboard
+                </h1>
+                <p className="text-muted-foreground text-lg">
+                  Manage loan data and system operations
+                </p>
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" className="gap-2 bg-transparent">
@@ -179,8 +206,12 @@ export default function AdminDashboard() {
                   </div>
                   <div>
                     <p className="text-3xl font-bold mb-1">{stat.value}</p>
-                    <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{stat.change}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      {stat.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {stat.change}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -219,22 +250,36 @@ export default function AdminDashboard() {
                     <TableBody>
                       {pendingReviews.map((record) => (
                         <TableRow key={record.id}>
-                          <TableCell className="font-medium">{record.bank}</TableCell>
+                          <TableCell className="font-medium">
+                            {record.bank}
+                          </TableCell>
                           <TableCell>{record.name}</TableCell>
                           <TableCell>
                             <Badge variant="secondary" className="capitalize">
                               {record.type}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">{record.changes}</TableCell>
-                          <TableCell className="text-sm">{record.captureDate}</TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {record.changes}
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {record.captureDate}
+                          </TableCell>
                           <TableCell>
                             <div className="flex gap-2">
-                              <Button size="sm" variant="outline" onClick={() => handleApprove(record.id)}>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleApprove(record.id)}
+                              >
                                 <CheckCircle className="h-4 w-4 mr-1" />
                                 Approve
                               </Button>
-                              <Button size="sm" variant="outline" onClick={() => handleReject(record.id)}>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleReject(record.id)}
+                              >
                                 Reject
                               </Button>
                             </div>
@@ -264,7 +309,10 @@ export default function AdminDashboard() {
                 <CardContent>
                   <div className="space-y-4">
                     {scraperLogs.map((log, idx) => (
-                      <div key={idx} className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0">
+                      <div
+                        key={idx}
+                        className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0"
+                      >
                         <div
                           className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 ${
                             log.status === "success"
@@ -285,9 +333,13 @@ export default function AdminDashboard() {
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
                             <p className="font-semibold">{log.bank}</p>
-                            <span className="text-xs text-muted-foreground">{log.time}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {log.time}
+                            </span>
                           </div>
-                          <p className="text-sm text-muted-foreground mb-1">{log.message}</p>
+                          <p className="text-sm text-muted-foreground mb-1">
+                            {log.message}
+                          </p>
                           {log.records > 0 && (
                             <Badge variant="secondary" className="text-xs">
                               {log.records} records
@@ -300,11 +352,17 @@ export default function AdminDashboard() {
 
                   <div className="mt-6 pt-6 border-t">
                     <div className="flex gap-2">
-                      <Button variant="outline" className="gap-2 bg-transparent">
+                      <Button
+                        variant="outline"
+                        className="gap-2 bg-transparent"
+                      >
                         <RefreshCw className="h-4 w-4" />
                         Refresh Logs
                       </Button>
-                      <Button variant="outline" className="gap-2 bg-transparent">
+                      <Button
+                        variant="outline"
+                        className="gap-2 bg-transparent"
+                      >
                         <FileText className="h-4 w-4" />
                         Export Logs
                       </Button>
@@ -341,15 +399,21 @@ export default function AdminDashboard() {
                         .slice(0, 5)
                         .map((loan) => (
                           <TableRow key={loan.id}>
-                            <TableCell className="font-medium">{loan.bank}</TableCell>
+                            <TableCell className="font-medium">
+                              {loan.bank}
+                            </TableCell>
                             <TableCell>{loan.name}</TableCell>
                             <TableCell>
                               <Badge variant="secondary" className="capitalize">
                                 {loan.type}
                               </Badge>
                             </TableCell>
-                            <TableCell className="text-sm">{loan.interestRate}</TableCell>
-                            <TableCell className="text-sm">{loan.lastUpdated}</TableCell>
+                            <TableCell className="text-sm">
+                              {loan.interestRate}
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {loan.lastUpdated}
+                            </TableCell>
                             <TableCell>
                               <Button size="sm" variant="outline">
                                 Edit
@@ -378,27 +442,33 @@ export default function AdminDashboard() {
                       <Card>
                         <CardContent className="pt-6">
                           <p className="text-2xl font-bold">1,234</p>
-                          <p className="text-sm text-muted-foreground">Total Users</p>
+                          <p className="text-sm text-muted-foreground">
+                            Total Users
+                          </p>
                         </CardContent>
                       </Card>
                       <Card>
                         <CardContent className="pt-6">
                           <p className="text-2xl font-bold">892</p>
-                          <p className="text-sm text-muted-foreground">Active (30 days)</p>
+                          <p className="text-sm text-muted-foreground">
+                            Active (30 days)
+                          </p>
                         </CardContent>
                       </Card>
                       <Card>
                         <CardContent className="pt-6">
                           <p className="text-2xl font-bold">5</p>
-                          <p className="text-sm text-muted-foreground">Admins</p>
+                          <p className="text-sm text-muted-foreground">
+                            Admins
+                          </p>
                         </CardContent>
                       </Card>
                     </div>
 
                     <div className="pt-4">
                       <p className="text-sm text-muted-foreground mb-4">
-                        User management features include viewing user activity, managing permissions, and handling
-                        support requests.
+                        User management features include viewing user activity,
+                        managing permissions, and handling support requests.
                       </p>
                       <div className="flex gap-2">
                         <Button variant="outline" className="bg-transparent">
@@ -416,8 +486,6 @@ export default function AdminDashboard() {
           </Tabs>
         </div>
       </main>
-
-      <Footer />
     </div>
-  )
+  );
 }
