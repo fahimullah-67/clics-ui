@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useRef } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import axios from "axios";
+
 import {
   Card,
   CardContent,
@@ -20,119 +22,144 @@ import {
   Percent,
   Building2,
   CheckCircle2,
-} from "lucide-react"
+  MessageCircleWarningIcon,
+} from "lucide-react";
 
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import api from "../utils/axios";
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function SchemeDetailPage() {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const pageRef = useRef(null)
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const pageRef = useRef(null);
 
-  const [scheme, setScheme] = useState(null)
+  const [scheme, setScheme] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  /* ✅ MOCK DATA INSIDE PAGE (as requested) */
-  const [loanSchemes] = useState([
-    {
-      id: "1",
-      name: "HBL Car Financing",
-      bank: "HBL",
-      type: "Car Financing",
-      interestRate: "14.5% - 16%",
-      minAmount: 500000,
-      maxAmount: 5000000,
-      tenure: "1-7 years",
-      processingFee: "1%",
-      features: [
-        "Quick Approval",
-        "Up to 90% Financing",
-        "Flexible Tenure",
-        "Insurance Options",
-      ],
-      lastUpdated: "2024-01-15",
-    },
-    {
-      id: "2",
-      name: "UBL Personal Loan",
-      bank: "UBL",
-      type: "Personal Loan",
-      interestRate: "16% - 18%",
-      minAmount: 100000,
-      maxAmount: 3000000,
-      tenure: "1-5 years",
-      processingFee: "1.5%",
-      features: [
-        "No Collateral",
-        "Same Day Disbursement",
-        "Flexible Repayment",
-      ],
-      lastUpdated: "2024-01-14",
-    },
-    {
-      id: "3",
-      name: "MCB Home Loan",
-      bank: "MCB",
-      type: "Home Loan",
-      interestRate: "13% - 15%",
-      minAmount: 1000000,
-      maxAmount: 50000000,
-      tenure: "5-25 years",
-      processingFee: "0.5%",
-      features: ["Low Interest", "Long Tenure", "Up to 85% Financing"],
-      lastUpdated: "2024-01-16",
-    },
-  ])
-
-  /* ✅ FIND SCHEME + GSAP */
+  /* ✅ FETCH FROM API */
   useEffect(() => {
-    const found = loanSchemes.find((s) => s.id === id)
-    setScheme(found)
+    const fetchScheme = async () => {
+      try {
+        setLoading(true);
 
-    if (!found) return
+        const res = await api.get("/loanSchemes/getOne", {
+          params: { id },
+        });
 
-    /* Page intro animation */
-    gsap.fromTo(
-      ".page-animate",
-      { opacity: 0, y: 40 },
-      { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
-    )
+        // console.log("FULL RESPONSE:", res);
+        // console.log("DATA:", res.data);
 
-    /* Scroll-based animation */
-    gsap.utils.toArray(".detail-section").forEach((section) => {
-      gsap.fromTo(
-        section,
-        { opacity: 0, y: 40 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 85%",
-          },
-        }
-      )
-    })
-  }, [id, loanSchemes])
+        const data = res?.data?.data;
+
+        // if (!data) {
+        //   throw new Error("No data received from API");
+        // } else {
+        //   console.log("Received scheme data:", data);
+        // }
+
+        const formatted = {
+          id: data._id,
+
+          name: data.schemeName,
+          bank: data.bankId?.name || "Unknown Bank",
+          type: data.typeLoan,
+
+          interestRate: `${data.interestRate}% (${data.interestType})`,
+
+          minAmount: data.minSalaryRequired || 0,
+          maxAmount: 0,
+
+          tenure: `${data.tenureMin} - ${data.tenureMax} months`,
+
+          processingFee:
+            data.processingFee === "percentage"
+              ? `${data.processingFee}%`
+              : data.processingFee,
+
+          // features: [data.eligibilityCriteria, data.requiredDocuments],
+          eligibilityCriteria: data.eligibilityCriteria,
+          requiredDocuments: data.requiredDocuments,
+
+          lastUpdated: new Date(data.updatedAt).toLocaleDateString(),
+
+          description: data.description,
+          isVerified: data.isVerified,
+
+          ageRange: `${data.ageMin} - ${data.ageMax}`,
+          isIslamic: data.isIslamic,
+          status: data.status,
+          verifiedBy: data.verifiedBY,
+        };
+
+        setScheme(formatted);
+
+        /* Animations */
+        setTimeout(() => {
+          gsap.fromTo(
+            ".page-animate",
+            { opacity: 0, y: 40 },
+            { opacity: 1, y: 0, duration: 0.8 },
+          );
+
+          gsap.utils.toArray(".detail-section").forEach((section) => {
+            gsap.fromTo(
+              section,
+              { opacity: 0, y: 40 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                scrollTrigger: {
+                  trigger: section,
+                  start: "top 85%",
+                },
+              },
+            );
+          });
+        }, 100);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load scheme");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchScheme();
+  }, [id]);
+
+  /* 🔄 LOADING */
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg font-semibold">Loading scheme...</p>
+      </div>
+    );
+  }
+
+  /* ❌ ERROR */
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600">{error}</p>
+          <Button onClick={() => navigate("/schemes")}>Back</Button>
+        </div>
+      </div>
+    );
+  }
 
   /* ❌ NOT FOUND */
   if (!scheme) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">
-            Scheme not found
-          </h2>
-          <Button onClick={() => navigate("/schemes")}>
-            Back to Schemes
-          </Button>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <h2>Scheme not found</h2>
       </div>
-    )
+    );
   }
 
   return (
@@ -141,7 +168,7 @@ export default function SchemeDetailPage() {
       className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 page-animate"
     >
       <div className="container mx-auto px-4 py-12">
-        {/* Back Button */}
+        {/* Back */}
         <Button
           variant="ghost"
           onClick={() => navigate("/schemes")}
@@ -152,39 +179,26 @@ export default function SchemeDetailPage() {
         </Button>
 
         <div className="max-w-4xl mx-auto space-y-6">
-          {/* Header Card */}
+          {/* HEADER */}
           <Card className="detail-section shadow-xl border-0 overflow-hidden">
-            <div
-              className={`h-32 bg-gradient-to-r ${
-                scheme.type === "Car Financing"
-                  ? "from-blue-600 to-blue-700"
-                  : scheme.type === "Personal Loan"
-                  ? "from-green-600 to-green-700"
-                  : scheme.type === "Home Loan"
-                  ? "from-purple-600 to-purple-700"
-                  : "from-orange-600 to-orange-700"
-              } flex items-center justify-center`}
-            >
+            <div className="h-32 bg-gradient-to-r from-blue-600 to-blue-700 flex items-center justify-center">
               <TrendingUp className="w-16 h-16 text-white" />
             </div>
 
             <CardHeader>
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between">
                 <div>
-                  <CardTitle className="text-3xl mb-2">
-                    {scheme.name}
-                  </CardTitle>
+                  <CardTitle className="text-3xl mb-2">{scheme.name}</CardTitle>
                   <CardDescription className="text-lg">
                     {scheme.bank}
                   </CardDescription>
                 </div>
-                <Badge className="px-3 py-1">{scheme.type}</Badge>
+                <Badge>{scheme.type}</Badge>
               </div>
             </CardHeader>
 
             <CardContent>
               <div className="grid md:grid-cols-2 gap-6">
-                {/* Left */}
                 <div className="space-y-4">
                   <InfoItem
                     icon={<Percent />}
@@ -195,12 +209,11 @@ export default function SchemeDetailPage() {
                   <InfoItem
                     icon={<DollarSign />}
                     label="Loan Amount"
-                    value={`PKR ${scheme.minAmount.toLocaleString()} - ${scheme.maxAmount.toLocaleString()}`}
+                    value={`PKR ${scheme.minAmount?.toLocaleString()} - ${scheme.maxAmount?.toLocaleString()}`}
                     color="green"
                   />
                 </div>
 
-                {/* Right */}
                 <div className="space-y-4">
                   <InfoItem
                     icon={<Calendar />}
@@ -219,43 +232,109 @@ export default function SchemeDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Features */}
-          <Card className="detail-section shadow-lg border-0">
+          {/* FEATURES */}
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
-                Key Features
-              </CardTitle>
+              <CardTitle>Description</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-wrap gap-2">
-              {scheme.features.map((feature, index) => (
-                <Badge key={index} className="px-3 py-1">
-                  {feature}
-                </Badge>
-              ))}
+            <CardContent>
+              <p>{scheme.description}</p>
             </CardContent>
           </Card>
 
-          {/* Verification */}
-          <Card className="detail-section shadow-lg border border-green-200 bg-green-50">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-green-800">
-                <CheckCircle2 className="w-5 h-5" />
+              <CardTitle>Eligibility</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>{scheme.eligibilityCriteria}</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Required Documents</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>{scheme.requiredDocuments}</p>
+            </CardContent>
+          </Card>
+
+          <Card className="detail-section shadow-lg border-0">
+            <CardHeader>
+              <CardTitle>Additional Details</CardTitle>
+            </CardHeader>
+
+            <CardContent className="grid md:grid-cols-2 gap-6">
+              <InfoItem
+                icon={<Calendar />}
+                label="Age Limit"
+                value={scheme.ageRange}
+                color="purple"
+              />
+
+              <InfoItem
+                icon={<DollarSign />}
+                label="Minimum Salary"
+                value={`PKR ${scheme.minAmount.toLocaleString()}`}
+                color="green"
+              />
+
+              <InfoItem
+                icon={<Building2 />}
+                label="Bank Type"
+                value={scheme.isIslamic ? "Islamic" : "Conventional"}
+                color="blue"
+              />
+
+              <InfoItem
+                icon={<Percent />}
+                label="Status"
+                value={scheme.status}
+                color="orange"
+              />
+            </CardContent>
+          </Card>
+
+          {/* VERIFICATION */}
+          <Card
+            className={`detail-section shadow-lg border ${
+              scheme.isVerified
+                ? "border-green-200 bg-green-50"
+                : "border-yellow-200 bg-yellow-50"
+            }`}
+          >
+            <CardHeader>
+              <CardTitle
+                className={`flex gap-2 ${
+                  scheme.isVerified ? "text-green-800" : "text-yellow-800"
+                }`}
+              >
+                <CheckCircle2 />
                 Verification Status
               </CardTitle>
             </CardHeader>
+
             <CardContent>
-              <p className="text-green-700">
-                Verified by our team. Last updated: {scheme.lastUpdated}
-              </p>
+              {scheme.isVerified ? (
+                <p className="text-green-700">
+                  <CheckCircle2 /> Verified by {scheme.verifiedBy || "Admin"}
+                  <br />
+                  Last updated: {scheme.lastUpdated}
+                </p>
+              ) : (
+                <p className="text-yellow-700">
+                  <MessageCircleWarningIcon></MessageCircleWarningIcon> Not
+                  Verified Yet <br />
+                  Status: {scheme.status}
+                </p>
+              )}
             </CardContent>
           </Card>
 
-          {/* Actions */}
+          {/* ACTIONS */}
           <div className="detail-section flex gap-4">
-            <Button className="flex-1 bg-blue-600 hover:bg-blue-700">
-              Add to Comparison
-            </Button>
+            <Button className="flex-1 bg-blue-600">Add to Comparison</Button>
             <Button variant="outline" className="flex-1">
               Add to Watchlist
             </Button>
@@ -263,17 +342,17 @@ export default function SchemeDetailPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-/* ✅ Reusable Info Item */
+/* ✅ INFO ITEM */
 function InfoItem({ icon, label, value, color }) {
   const colors = {
     blue: "bg-blue-100 text-blue-600",
     green: "bg-green-100 text-green-600",
     purple: "bg-purple-100 text-purple-600",
     orange: "bg-orange-100 text-orange-600",
-  }
+  };
 
   return (
     <div className="flex items-center gap-3">
@@ -284,8 +363,8 @@ function InfoItem({ icon, label, value, color }) {
       </div>
       <div>
         <p className="text-sm text-slate-600">{label}</p>
-        <p className="text-xl font-bold text-slate-900">{value}</p>
+        <p className="text-xl font-bold">{value}</p>
       </div>
     </div>
-  )
+  );
 }
