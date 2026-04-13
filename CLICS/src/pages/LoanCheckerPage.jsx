@@ -5,6 +5,12 @@ import { Input } from "../components/custom-ui/Input";
 import { Label } from "../components/custom-ui/Label";
 import { Select } from "../components/custom-ui/Select";
 import { Badge } from "../components/custom-ui/Badge";
+import {
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@radix-ui/react-select";
 
 export default function LoanCheckerPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -133,21 +139,21 @@ export default function LoanCheckerPage() {
     // Mock bank recommendations
     const bankRecommendations = [
       {
-        bank: "State Bank of India",
+        bank: "State Bank of Pakistan",
         interestRate: "8.5%",
         processingFee: "0.5%",
         tenure: "20 years",
         rating: 4.5,
       },
       {
-        bank: "HDFC Bank",
+        bank: "HBL Bank",
         interestRate: "8.75%",
         processingFee: "1%",
         tenure: "20 years",
         rating: 4.7,
       },
       {
-        bank: "ICICI Bank",
+        bank: "UBL Bank",
         interestRate: "9%",
         processingFee: "1%",
         tenure: "20 years",
@@ -274,18 +280,22 @@ export default function LoanCheckerPage() {
               <div>
                 <Label htmlFor="loanType">Loan Type *</Label>
                 <Select
-                  id="loanType"
                   value={formData.loanType}
-                  onChange={(e) =>
-                    handleInputChange("loanType", e.target.value)
+                  onValueChange={(value) =>
+                    handleInputChange("loanType", value)
                   }
                 >
-                  <option value="">Select loan type</option>
-                  {loanTypes.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select loan type" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {loanTypes.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
 
@@ -304,7 +314,7 @@ export default function LoanCheckerPage() {
 
               <div>
                 <Label htmlFor="employmentType">Employment Type *</Label>
-                <Select
+                <select
                   id="employmentType"
                   value={formData.employmentType}
                   onChange={(e) =>
@@ -317,7 +327,7 @@ export default function LoanCheckerPage() {
                       {type.label}
                     </option>
                   ))}
-                </Select>
+                </select>
               </div>
 
               <div>
