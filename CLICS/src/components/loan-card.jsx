@@ -5,6 +5,7 @@ import { Button } from "./custom-ui/Button";
 import { CheckCircle2, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 
+
 export function LoanCard({ loan, onCompare, isComparing }) {
 
   const formatAmount = (amount) => {
