@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom"
 import  {Header}  from "./components/header"
 import { Footer } from "./components/footer"
 import { Chatbot } from "./components/chatbot"
+// import { Toaster } from "./components/ui/toaster"
 import HomePage from "./pages/HomePage"
 import SchemesPage from "./pages/SchemesPage"
 import SchemeDetailPage from "./pages/SchemeDetailPage"
@@ -55,6 +56,7 @@ function App() {
       </Routes>
       <Footer />
       <Chatbot />
+      {/* <Toaster /> */}
     </div>
   );
 }
