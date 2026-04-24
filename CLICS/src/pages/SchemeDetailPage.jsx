@@ -1,7 +1,8 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useRef } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useEffect, useState, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "../components/ui/use-toast";
 import axios from "axios";
 
 import {
@@ -10,9 +11,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../components/custom-ui/Card"
-import { Button } from "../components/custom-ui/Button"
-import { Badge } from "../components/custom-ui/Badge"
+} from "../components/custom-ui/Card";
+import { Button } from "../components/custom-ui/Button";
+import { Badge } from "../components/custom-ui/Badge";
 
 import {
   ArrowLeft,
@@ -25,20 +26,23 @@ import {
   MessageCircleWarningIcon,
 } from "lucide-react";
 
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import api from "../utils/axios";
+// import { toast } from "../hooks/use-toast";
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger);
 
 export default function SchemeDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const pageRef = useRef(null);
+  // const { toast } = toast();
 
   const [scheme, setScheme] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [addingToWatchlist, setAddingToWatchlist] = useState(false);
 
   /* ✅ FETCH FROM API */
   useEffect(() => {
@@ -334,9 +338,63 @@ export default function SchemeDetailPage() {
 
           {/* ACTIONS */}
           <div className="detail-section flex gap-4">
-            <Button className="flex-1 bg-blue-600">Add to Comparison</Button>
-            <Button variant="outline" className="flex-1">
-              Add to Watchlist
+            <Button
+              className="flex-1 bg-blue-600"
+              onClick={() => {
+                // Handle add to comparison logic
+              }}
+            >
+              Add to Comparison
+            </Button>
+
+            <Button
+              variant="outline"
+              className="flex-1"
+              disabled={addingToWatchlist}
+              onClick={async () => {
+                try {
+                  setAddingToWatchlist(true);
+                  const response = await api.post("watchlist/addWatchlist", {
+                    loanSchemeId: scheme.id,
+                  });
+                  console.log("Response", response);
+
+                  alert("Scheme added to watchlist!");
+                  // toast({
+                  //   title: "Success",
+                  //   description: "Scheme added to watchlist!",
+                  //   variant: "success",
+                  // });
+                } catch (error) {
+                  console.error("Watchlist error full:", error);
+                  console.error("Error response:", error.response?.data);
+
+                  // Try multiple paths to extract error message
+                  let errorMessage = "Failed to add to watchlist";
+
+                  console.log("Response", error.response);
+
+                  if (error.response?.data?.error) {
+                    errorMessage = error.response.data.error;
+                  } else if (error.response?.data?.message) {
+                    errorMessage = error.response.data.message;
+                  } else if (error.message) {
+                    errorMessage = error.message;
+                  }
+
+                  console.log("Final error message:", errorMessage);
+                  alert(errorMessage);
+                  // toast({
+                  //   title: "Error",
+                  //   description: errorMessage,
+                  //   variant: "destructive",
+                  // });
+                } finally {
+                  setAddingToWatchlist(false);
+                }
+              }}
+            >
+              {addingToWatchlist ? "Adding..." : "Add to Watchlist"}
             </Button>
           </div>
         </div>
@@ -345,7 +403,7 @@ export default function SchemeDetailPage() {
   );
 }
 
-/* ✅ INFO ITEM */
+/*  INFO ITEM */
 function InfoItem({ icon, label, value, color }) {
   const colors = {
     blue: "bg-blue-100 text-blue-600",
