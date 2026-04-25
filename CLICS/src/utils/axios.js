@@ -25,4 +25,20 @@ api.interceptors.request.use(
     return Promise.reject(error);
   },
 );
+
+api.interceptors.response.use(
+  (response) => {
+    console.log("Response Success:", response.data);
+    return response;
+  },
+  (error) => {
+    console.error("Response Error Full:", {
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message,
+    });
+    return Promise.reject(error);
+  },
+);
+
 export default api;
