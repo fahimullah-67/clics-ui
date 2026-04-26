@@ -2,99 +2,94 @@ import { useState } from "react"
 import { Button } from "../components/custom-ui/Button"
 import { Card } from "../components/custom-ui/Card"
 import { Badge } from "../components/custom-ui/Badge"
+import { useEffect } from "react";
+import api from "../utils/axios";
+import { useNavigate } from "react-router-dom";
+import { timeAgo } from "../utils/timeAgo";
 
 export default function NotificationsPage() {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState("all")
+  const [loading, setLoading] = useState(true);
 
   // Mock notifications data
   const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      type: "success",
-      category: "loan",
-      title: "Loan Application Approved",
-      message: "Congratulations! Your home loan application has been approved. Amount: ₹50,00,000",
-      timestamp: "2 hours ago",
-      read: false,
-      actionable: true,
-      actionText: "View Details",
-    },
-    {
-      id: 2,
-      type: "info",
-      category: "scheme",
-      title: "New Investment Scheme Available",
-      message: "Check out the new PPF scheme with attractive interest rates starting from 7.1%",
-      timestamp: "5 hours ago",
-      read: false,
-      actionable: true,
-      actionText: "Explore Scheme",
-    },
-    {
-      id: 3,
-      type: "warning",
-      category: "payment",
-      title: "EMI Payment Due Soon",
-      message: "Your EMI payment of ₹15,000 is due in 3 days. Please ensure sufficient balance.",
-      timestamp: "1 day ago",
-      read: true,
-      actionable: true,
-      actionText: "Pay Now",
-    },
-    {
-      id: 4,
-      type: "success",
-      category: "document",
-      title: "Documents Verified",
-      message: "All your submitted documents have been verified successfully.",
-      timestamp: "2 days ago",
-      read: true,
-      actionable: false,
-    },
-    {
-      id: 5,
-      type: "info",
-      category: "rate",
-      title: "Interest Rate Update",
-      message: "SBI has reduced home loan interest rates to 8.5%. Consider refinancing your existing loan.",
-      timestamp: "3 days ago",
-      read: true,
-      actionable: true,
-      actionText: "Learn More",
-    },
-    {
-      id: 6,
-      type: "alert",
-      category: "security",
-      title: "New Login Detected",
-      message: "A new login was detected from Chrome on Windows. If this wasn't you, secure your account.",
-      timestamp: "3 days ago",
-      read: true,
-      actionable: true,
-      actionText: "Review Activity",
-    },
-    {
-      id: 7,
-      type: "info",
-      category: "message",
-      title: "New Message from HDFC Bank",
-      message: "You have received a new message regarding your query about credit cards.",
-      timestamp: "1 week ago",
-      read: true,
-      actionable: true,
-      actionText: "View Message",
-    },
-    {
-      id: 8,
-      type: "success",
-      category: "account",
-      title: "Profile Updated Successfully",
-      message: "Your profile information has been updated. Review your changes in settings.",
-      timestamp: "1 week ago",
-      read: true,
-      actionable: false,
-    },
-  ])
+    // {
+    //   id: 1,
+    //   type: "success",
+    //   category: "loan",
+    //   title: "Loan Application Approved",
+    //   message: "Congratulations! Your home loan application has been approved. Amount: ₹50,00,000",
+    //   timestamp: "2 hours ago",
+    //   read: false,
+    //   actionable: true,
+    //   actionText: "View Details",
+    // },
+    // {
+    //   id: 8,
+    //   type: "success",
+    //   category: "account",
+    //   title: "Profile Updated Successfully",
+    //   message:
+    //     "Your profile information has been updated. Review your changes in settings.",
+    //   timestamp: "1 week ago",
+    //   read: false,
+    //   actionable: false,
+    // },
+  ]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      setLoading(true);
+
+      try {
+        const res = await api.get("notifications/getAllNotifications");
+        console.log("Fetch Data: ", res.data.data);
+
+        const formatted = res.data.data.map((item) => ({
+          id: item._id,
+          type: item.uiType,
+          category: item.category,
+          title: item.title,
+          message: item.message,
+          timestamp: timeAgo(item.createdAt),
+          read: item.isRead,
+          actionable: !!item.actionLink,
+          actionText: item.actionText,
+        }));
+        setNotifications(formatted);
+      } catch (error) {
+        console.error("Error fetching notifications in UI:", error);
+        if (error.response?.status === 401) {
+          navigate("/login");
+        }
+      } finally {
+        console.log("Fetch notifications completed");
+        setLoading(false);
+      }
+    };
+
+    fetchNotifications();
+    // Simulate receiving a new notification after 5 seconds
+    // const timer = setTimeout(() => {
+    //   const newNotification = {
+    //     id: Date.now(),
+    //     type: "alert",
+    //     category: "security",
+    //     title: "Unusual Activity Detected",
+    //     message:
+    //       "We noticed unusual activity on your account. Please review your recent transactions.",
+    //     timestamp: "Just now",
+    //     read: false,
+    //     actionable: true,
+    //     actionText: "Review Now",
+    //   };
+    //   setNotifications((prev) => [newNotification, ...prev]);
+    // }, 5000);
+
+    // return () => clearTimeout(timer);
+  }, [navigate]);
+
 
   const getNotificationIcon = (type) => {
     switch (type) {
@@ -151,27 +146,97 @@ export default function NotificationsPage() {
   }
 
   const handleMarkAsRead = (id) => {
-    setNotifications((prev) => prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif)))
+    const res = api
+      .post(`notifications/markAsRead/${id}`)
+      .then((res) => {
+        console.log("Mark as read response: ", res.data);
+        setNotifications((prev) =>
+          prev.map((notif) =>
+            notif.id === id ? { ...notif, read: true } : notif,
+          ),
+        );
+      })
+      .catch((error) => {
+        console.error("Error marking notification as read:", error);
+      });
+
+    // setNotifications((prev) => prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif)))
   }
 
   const handleMarkAllAsRead = () => {
-    setNotifications((prev) => prev.map((notif) => ({ ...notif, read: true })))
+    api
+      .post("notifications/markAllAsRead")
+      .then((res) => {
+        console.log("Mark all as read response: ", res.data);
+        setNotifications((prev) =>
+          prev.map((notif) => ({ ...notif, read: true })),
+        );
+      })
+      .catch((error) => {
+        console.error("Error marking all notifications as read:", error);
+      });
+
+    //
+    // setNotifications((prev) => prev.map((notif) => ({ ...notif, read: true })))
   }
 
   const handleDelete = (id) => {
-    setNotifications((prev) => prev.filter((notif) => notif.id !== id))
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this notification?",
+    );
+    if (!confirmDelete) return;
+
+    api
+      .delete(`notifications/deleteNotification/${id}`)
+      .then((res) => {
+        console.log("Delete notification response: ", res.data);
+        setNotifications((prev) => prev.filter((notif) => notif.id !== id));
+      })
+      .catch((error) => {
+        console.error("Error deleting notification:", error);
+      });
+
+    //
+
+    // setNotifications((prev) => prev.filter((notif) => notif.id !== id))
   }
 
   const handleClearAll = () => {
-    if (window.confirm("Are you sure you want to clear all notifications?")) {
-      setNotifications([])
-    }
+    if (window.confirm("Are you sure you want to clear all notifications?"))
+      api
+        .delete("notifications/clearAllNotifications")
+        .then((res) => {
+          console.log("Clear all notifications response: ", res.data);
+          setNotifications([]);
+        })
+        .catch((error) => {
+          console.error("Error clearing notifications:", error);
+        });
+
+    setNotifications([]);
+    
   }
 
   const filteredNotifications =
     filter === "all" ? notifications : notifications.filter((notif) => notif.category === filter)
 
   const unreadCount = notifications.filter((n) => !n.read).length
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg text-slate-600">Loading notifications...</p>
+      </div>
+    );
+  } else if (notifications.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg text-slate-600">
+          No notifications yet. You're all caught up!
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
