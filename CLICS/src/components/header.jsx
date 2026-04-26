@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom"
 import { useState } from "react"
 import { Menu, Search, User, Bell, X } from "lucide-react"
+import { useNavigate } from "react-router-dom";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
+  const navigate = useNavigate();
 
   const navLinks = [
     { path: "/", label: "Home" },
@@ -50,7 +52,10 @@ export function Header() {
             <Search size={20} />
           </button>
 
-          <button className="hidden sm:flex p-2 hover:bg-gray-100 rounded">
+          <button
+            className="hidden sm:flex p-2 hover:bg-gray-100 rounded"
+            onClick={() => navigate("/notifications")}
+          >
             <Bell size={20} />
           </button>
 
