@@ -45,7 +45,7 @@ export default function WatchlistPage() {
     };
 
     fetchWatchlist();
-  }, [navigate, reFresh]);
+  }, [navigate]);
 
   useEffect(() => {
     gsap.fromTo(
