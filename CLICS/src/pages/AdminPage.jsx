@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, act } from "react";
 import { useNavigate } from "react-router-dom";
 // import { useAuth } from "../context/AuthProvider";
 import { Button } from "../components/ui/button";
@@ -34,79 +34,189 @@ import {
 } from "lucide-react";
 import { mockLoans } from "../lib/mock-data";
 import { useAuth } from "../context/AuthProvider";
+import api from "../utils/axios";
+import { timeAgo } from "../utils/timeAgo";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-
-  if (!user) {
-    return navigate("/login");
-    // <Navigation to="/login" />;
-  }
-  if (user.role !== "admin") {
-    return navigate("/");
-  }
-
+  const [loader, setLoader] = useState(false);
+  const [error, setError] = useState(null);
+  const [expandedRow, setExpandedRow] = useState(null);
   const [isScraperRunning, setIsScraperRunning] = useState(false);
-
-  const stats = [
+  const [logs, setLogs] = useState([]);
+  const [pendingReviews, setPendingReviews] = useState([
     {
-      title: "Total Loan Schemes",
-      value: mockLoans.length.toString(),
-      change: "+3 this week",
-      icon: Database,
-      color: "text-blue-600",
-    },
-    {
-      title: "Verified Records",
-      value: mockLoans.filter((l) => l.verified).length.toString(),
-      change: "92% verified",
-      icon: CheckCircle,
-      color: "text-green-600",
-    },
-    {
-      title: "Pending Review",
-      value: "4",
-      change: "Needs attention",
-      icon: Clock,
-      color: "text-orange-600",
-    },
-    {
-      title: "Active Users",
-      value: "1,234",
-      change: "+12% this month",
-      icon: Users,
-      color: "text-purple-600",
-    },
-  ];
-
-  const pendingReviews = [
-    {
-      id: "9",
-      bank: "JS Bank",
-      name: "JS Bank Business Loan",
-      type: "business",
-      status: "pending",
-      captureDate: "2025-01-16",
-      changes: "New scheme detected",
-    },
-    {
-      id: "10",
-      bank: "Askari Bank",
-      name: "Askari Home Finance",
-      type: "home",
-      status: "pending",
-      captureDate: "2025-01-15",
-      changes: "Interest rate updated",
+      id: "11",
+      bank: "Soneri Bank",
+      name: "Soneri Car Loan",
+      type: "car",
+      status: "inactive",
+      captureDate: "2025-01-14",
+      changes: "Processing fee changed",
     },
     {
       id: "11",
       bank: "Soneri Bank",
       name: "Soneri Car Loan",
       type: "car",
-      status: "pending",
+      status: "warning",
       captureDate: "2025-01-14",
       changes: "Processing fee changed",
+    },
+    {
+      id: "11",
+      bank: "Soneri Bank",
+      name: "Soneri Car Loan",
+      type: "car",
+      status: "inactive",
+      captureDate: "2025-01-14",
+      changes: "Processing fee changed",
+    },
+  ]);
+  const [verify, setVerify] = useState([]);
+  const [scheme, setScheme] = useState([]);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      const res = await api.get("/adminLogs");
+
+      console.log("Fetched admin logs:", res);
+      const data = res.data.data;
+      setLogs(data);
+    };
+
+    fetchLogs();
+  }, []);
+
+  useEffect(() => {
+    const fetchPendingReviews = async () => {
+      setLoader(true);
+      try {
+        const res = await api.get("/loanSchemes/getAll");
+        console.log("res", res);
+
+        const schemes = res.data?.data?.allLoanScheme;
+        console.log("Fetched schemes for pending reviews:", schemes);
+
+        const formatted = schemes?.map((scheme) => ({
+          id: scheme._id,
+          bank: scheme.bankId?.name || "Unknown Bank",
+          name: scheme.schemeName,
+          type: scheme.typeLoan,
+          status: scheme.status,
+          interestRate: scheme.interestRate,
+          lastUpdated: new Date(scheme.updatedAt).toLocaleDateString(),
+          verified: scheme.isVerified,
+          captureDate: new Date(scheme.createdAt).toLocaleDateString(),
+          changes: scheme.isVerified
+            ? "Verified - no changes"
+            : "Pending verification",
+        }));
+
+        console.log("Formatted Pending Reviews:", formatted);
+
+        // Set all schemes for admin view
+        setScheme(formatted);
+        // Filter for inactive/pending schemes
+        const inactiveSchemes = formatted?.filter(
+          (s) => s.status === "inactive",
+        );
+        console.log("Inactive Schemes:", inactiveSchemes);
+        setPendingReviews(inactiveSchemes);
+
+        // Filter for verified schemes
+        const verifiedSchemes = formatted?.filter((s) => s.verified === true);
+        console.log("Verified Schemes:", verifiedSchemes);
+        setVerify(verifiedSchemes);
+        console.log("Set Verify:", setVerify);
+      } catch (error) {
+        console.error(error);
+        setError("Failed to load scheme");
+      } finally {
+        setLoader(false);
+        console.log("Finished fetching pending reviews");
+      }
+    };
+
+    fetchPendingReviews();
+  }, [navigate]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoader(true);
+      try {
+        const res = await api.get("/all-user");
+        console.log("Fetched ALL users data:", res);
+
+        const users = res.data?.data;
+        console.log("Fetched users for admin view:", users);
+
+        const formatted = users?.map((user) => ({
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          createdAt: timeAgo(user.createdAt),
+          actions: "View | Edit | Delete",
+          phone: user.phone || "N/A",
+          isActive: user.isLoggedIn,
+          lastLogin: user.lastLoginAt ? timeAgo(user.lastLoginAt) : "Never",
+        }));
+        console.log("Formatted Users for Admin:", formatted);
+        setUsers(formatted);
+      } catch (error) {
+        console.error("Error fetching users for admin:", error);
+        if (error.response?.status === 401) {
+          navigate("/login");
+        } else {
+          setError("Failed to load users");
+        }
+      } finally {
+        setLoader(false);
+        console.log("Finished fetching users for admin");
+      }
+    };
+    fetchUser();
+  }, [navigate]);
+
+  const toggleRow = (id) => {
+    setExpandedRow(expandedRow === id ? null : id);
+  };
+
+  const stats = [
+    {
+      title: "Total Loan Schemes",
+      value: scheme?.length?.toString() || "0",
+      change: "+3 this week",
+      icon: Database,
+      color: "text-blue-600",
+    },
+    {
+      title: "Verified Records",
+      value: (
+        scheme?.filter((r) => r.verified === true).length ?? 0
+      ).toString(),
+      change: `${(((scheme?.filter((r) => r.verified === true).length ?? 0) / (scheme?.length ?? 1)) * 100).toFixed(2)}% verified`,
+      icon: CheckCircle,
+      color: "text-green-600",
+    },
+    {
+      title: "Pending Review",
+      value: (
+        scheme?.filter((r) => r.status === "inactive").length ?? 0
+      ).toString(),
+      change: "Needs attention",
+      icon: Clock,
+      color: "text-orange-600",
+    },
+    {
+      title: "Active Users",
+      value: users.filter((u) => u.isActive).length.toString(),
+      change: `${(((users.filter((u) => u.isActive).length ?? 0) / (users.length ?? 1)) * 100).toFixed(2)}% active`,
+      icon: Users,
+      color: "text-purple-600",
     },
   ];
 
@@ -155,6 +265,55 @@ export default function AdminDashboard() {
     setIsScraperRunning(!isScraperRunning);
     alert(isScraperRunning ? "Scraper stopped" : "Scraper started");
   };
+
+  const handleViewAllUsers = () => {
+    navigate("/users");
+  };
+
+  const handleExportUserData = () => {
+    if (!users || users.length === 0) {
+      alert("No user data to export");
+      return;
+    }
+
+    // Convert users array to CSV format
+    const headers = ["ID", "Name", "Email", "Role", "Active", "Created Date"];
+    const csvContent = [
+      headers.join(","),
+      ...users.map((u) =>
+        [
+          u.id || "",
+          u.name || "",
+          u.email || "",
+          u.role || "",
+          u.isActive ? "Yes" : "No",
+          new Date(u.createdAt).toLocaleDateString(),
+        ].join(","),
+      ),
+    ].join("\n");
+
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `users-export-${new Date().getTime()}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    alert("User data exported successfully!");
+  };
+
+  if (loader) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Activity className="h-8 w-8 animate-spin text-blue-600" />
+        <p className="ml-2 text-lg text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -224,6 +383,7 @@ export default function AdminDashboard() {
               <TabsTrigger value="scraper">Scraper Logs</TabsTrigger>
               <TabsTrigger value="verified">Verified Records</TabsTrigger>
               <TabsTrigger value="users">User Management</TabsTrigger>
+              <TabsTrigger value="logs">Admin Logs</TabsTrigger>
             </TabsList>
 
             {/* Pending Review Tab */}
@@ -248,7 +408,7 @@ export default function AdminDashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {pendingReviews.map((record) => (
+                      {pendingReviews?.map((record) => (
                         <TableRow key={record.id}>
                           <TableCell className="font-medium">
                             {record.bank}
@@ -394,7 +554,7 @@ export default function AdminDashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {mockLoans
+                      {verify
                         .filter((l) => l.verified)
                         .slice(0, 5)
                         .map((loan) => (
@@ -441,7 +601,7 @@ export default function AdminDashboard() {
                     <div className="grid sm:grid-cols-3 gap-4">
                       <Card>
                         <CardContent className="pt-6">
-                          <p className="text-2xl font-bold">1,234</p>
+                          <p className="text-2xl font-bold">{users.length}</p>
                           <p className="text-sm text-muted-foreground">
                             Total Users
                           </p>
@@ -449,7 +609,9 @@ export default function AdminDashboard() {
                       </Card>
                       <Card>
                         <CardContent className="pt-6">
-                          <p className="text-2xl font-bold">892</p>
+                          <p className="text-2xl font-bold">
+                            {users.filter((u) => u.isActive).length}
+                          </p>
                           <p className="text-sm text-muted-foreground">
                             Active (30 days)
                           </p>
@@ -457,7 +619,9 @@ export default function AdminDashboard() {
                       </Card>
                       <Card>
                         <CardContent className="pt-6">
-                          <p className="text-2xl font-bold">5</p>
+                          <p className="text-2xl font-bold">
+                            {users.filter((u) => u.role === "admin").length}
+                          </p>
                           <p className="text-sm text-muted-foreground">
                             Admins
                           </p>
@@ -471,15 +635,60 @@ export default function AdminDashboard() {
                         managing permissions, and handling support requests.
                       </p>
                       <div className="flex gap-2">
-                        <Button variant="outline" className="bg-transparent">
+                        <Button
+                          variant="outline"
+                          className="bg-transparent"
+                          onClick={handleViewAllUsers}
+                        >
                           View All Users
                         </Button>
-                        <Button variant="outline" className="bg-transparent">
+                        <Button
+                          variant="outline"
+                          className="bg-transparent"
+                          onClick={handleExportUserData}
+                        >
                           Export User Data
                         </Button>
                       </div>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="logs">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5" />
+                    Admin Activity Logs
+                  </CardTitle>
+                </CardHeader>
+
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Admin</TableHead>
+                        <TableHead>Action</TableHead>
+                        <TableHead>Collection</TableHead>
+                        <TableHead>Date</TableHead>
+                      </TableRow>
+                    </TableHeader>
+
+                    <TableBody>
+                      {logs?.map((log) => (
+                        <TableRow key={log._id}>
+                          <TableCell>{log.adminId?.name}</TableCell>
+                          <TableCell>{log.action}</TableCell>
+                          <TableCell>{log.targetCollection}</TableCell>
+                          <TableCell>
+                            {new Date(log.createdAt).toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </CardContent>
               </Card>
             </TabsContent>
