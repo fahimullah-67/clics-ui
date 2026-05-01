@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "../components/custom-ui/Card";
 import { Button } from "../components/custom-ui/Button";
-import { TrendingDown, TrendingUp, Trash2 } from "lucide-react";
+import { TrendingDown, TrendingUp, Trash2, Activity } from "lucide-react";
 import gsap from "gsap";
 import api from "../utils/axios";
 import { useNavigate } from "react-router-dom";
@@ -25,9 +25,9 @@ export default function WatchlistPage() {
 
         const formatted = res.data.data.map((item) => ({
           id: item._id,
-          schemeName: item.loanSchemeId.schemeName,
-          bank: item.loanSchemeId.bankId?.name || "Unknown Bank",
-          interestRate: item.loanSchemeId.interestRate,
+          schemeName: item.loanSchemeId?.schemeName || "Unknown Scheme",
+          bank: item.loanSchemeId?.bankId?.name || "Unknown Bank",
+          interestRate: item.loanSchemeId?.interestRate,
           change: (Math.random() * 2 - 1).toFixed(2),
           lastChecked: timeAgo(item.createdAt),
           alertsEnabled: item.NotificationOnChange,
@@ -45,7 +45,7 @@ export default function WatchlistPage() {
     };
 
     fetchWatchlist();
-  }, [navigate]);
+  }, [navigate, reFresh]);
 
   useEffect(() => {
     gsap.fromTo(
@@ -93,6 +93,9 @@ export default function WatchlistPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500">
+          <Activity className="w-6 h-6 text-blue-500" />
+        </div>
         <p className="text-lg text-slate-600">Loading your watchlist...</p>
       </div>
     );
