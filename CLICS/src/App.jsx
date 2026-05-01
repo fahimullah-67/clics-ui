@@ -12,6 +12,7 @@ import WatchlistPage from "./pages/WatchlistPage"
 import DashboardPage  from "./pages/DashboardPage"
 import CurrencyPage from "./pages/CurrencyPage1";
 import AdminPage from "./pages/AdminPage"
+import AdminRoute from "./routes/AdminRoute";
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
 import AboutPage from "./pages/AboutPage"
@@ -24,12 +25,31 @@ import HelpPage from "./pages/HelpPage"
 import SettingsPage from "./pages/SettingsPage"
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import UsersPage from "./pages/UsersPage";
 
 function App() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
       <Routes>
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <AdminRoute>
+              <UsersPage />
+            </AdminRoute>
+          }
+        />
+        {/* <Route path="/admin" element={<AdminPage />} /> */}
+
         <Route path="/" element={<HomePage />} />
         <Route path="/schemes" element={<SchemesPage />} />
         <Route path="/schemes/:id" element={<SchemeDetailPage />} />
@@ -38,7 +58,6 @@ function App() {
         <Route path="/watchlist" element={<WatchlistPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/currency" element={<CurrencyPage />} />
-        <Route path="/admin" element={<AdminPage />} />
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
