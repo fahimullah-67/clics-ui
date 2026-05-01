@@ -44,7 +44,6 @@ export default function SchemeDetailPage() {
   const [error, setError] = useState("");
   const [addingToWatchlist, setAddingToWatchlist] = useState(false);
 
-  /* ✅ FETCH FROM API */
   useEffect(() => {
     const fetchScheme = async () => {
       try {
@@ -136,7 +135,6 @@ export default function SchemeDetailPage() {
     fetchScheme();
   }, [id]);
 
-  /* 🔄 LOADING */
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -145,7 +143,6 @@ export default function SchemeDetailPage() {
     );
   }
 
-  /* ❌ ERROR */
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -157,7 +154,6 @@ export default function SchemeDetailPage() {
     );
   }
 
-  /* ❌ NOT FOUND */
   if (!scheme) {
     return (
       <div className="min-h-screen flex items-center justify-center">
