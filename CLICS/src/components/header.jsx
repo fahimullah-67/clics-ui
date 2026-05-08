@@ -1,12 +1,16 @@
 import { Link } from "react-router-dom"
 import { useState } from "react"
-import { Menu, Search, User, Bell, X } from "lucide-react"
+import { Menu, Search, User, Bell, X, MessageSquareText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Chatbot } from "./Chatbot";
+import { Input } from "../components/custom-ui/Input";
+
 
 export function Header() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [showDropdown, setShowDropdown] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
+  const [isChatOpen, setIsChatOpen] = useState(false); // Chat toggle state
 
   const navLinks = [
     { path: "/", label: "Home" },
@@ -16,7 +20,7 @@ export function Header() {
     { path: "/banks", label: "Pakistani Banks" },
     { path: "/about", label: "About" },
     { path: "/contact", label: "Contact" },
-  ]
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white">
@@ -48,6 +52,19 @@ export function Header() {
 
         {/* Right Actions */}
         <div className="flex items-center gap-3 relative">
+          <div className="relative">
+            <button
+              onClick={() => setIsChatOpen(!isChatOpen)}
+              className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-all relative"
+            >
+              <MessageSquareText size={22} />
+              {/* Notification Ping */}
+              <span className="absolute top-1 right-1 flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+              </span>
+            </button>
+          </div>
           <button className="hidden sm:flex p-2 hover:bg-gray-100 rounded">
             <Search size={20} />
           </button>
@@ -110,6 +127,8 @@ export function Header() {
           </button>
         </div>
       </div>
+
+      <Chatbot isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
 
       {/* Mobile Menu */}
       {isOpen && (
