@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "../components/custom-ui/Select";
 
-import { ArrowUpDown, Filter, Search } from "lucide-react";
+import { Activity, ArrowUpDown, Filter, Search } from "lucide-react";
 import gsap from "gsap";
 import api from "../utils/axios"; // axios instance
 
@@ -232,6 +232,7 @@ export default function SchemesPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p className="text-lg text-slate-600">Loading your Scheme Loan...</p>
+        <Activity className="h-8 w-8 animate-spin text-blue-600" />
       </div>
     );
   }
