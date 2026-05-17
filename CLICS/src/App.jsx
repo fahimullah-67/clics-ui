@@ -26,8 +26,15 @@ import SettingsPage from "./pages/SettingsPage"
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UsersPage from "./pages/UsersPage";
+import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 function App() {
+  const { i18n } = useTranslation();
+  useEffect(() => {
+    document.dir = i18n.language?.startsWith("ur") ? "rtl" : "ltr";
+  }, [i18n.language]);
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />

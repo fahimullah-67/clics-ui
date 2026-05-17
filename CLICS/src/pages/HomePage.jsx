@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next";
 import { useNavigate, Link } from "react-router-dom"
 
 import { Button } from "../components/custom-ui/Button"
@@ -24,6 +25,7 @@ import {
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("")
   const navigate = useNavigate()
+  const { t } = useTranslation();
 
   useEffect(() => {
     fadeUp(".hero-title")
@@ -52,17 +54,23 @@ export default function HomePage() {
       <section className="bg-gradient-to-br from-blue-50 via-indigo-50 to-cyan-50 py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="hero-title text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900">
-            Compare Banking Schemes
+            {t("home.heroTitle", "Compare Banking Schemes")}
           </h1>
 
           <p className="hero-subtitle mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Explore and compare banking schemes from Pakistan’s leading banks
+            {t(
+              "home.heroSubtitle",
+              "Explore and compare banking schemes from Pakistan’s leading banks",
+            )}
           </p>
 
           <div className="hero-search max-w-2xl mx-auto mt-8">
             <form onSubmit={handleSearch} className="flex gap-2">
               <Input
-                placeholder="Search for personal, car, home, student, or business loans..."
+                placeholder={t(
+                  "home.searchPlaceholder",
+                  "Search for personal, car, home, student, or business loans...",
+                )}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-12"
@@ -73,17 +81,22 @@ export default function HomePage() {
             </form>
 
             <div className="flex flex-wrap gap-2 mt-4 justify-center">
-              {["personal", "car", "home", "student", "business"].map((t) => (
-                <Button
-                  key={t}
-                  variant="outline"
-                  size="sm"
-                  className="capitalize"
-                  onClick={() => navigate(`/schemes?type=${t}`)}
-                >
-                  {t} Loans
-                </Button>
-              ))}
+              {["personal", "car", "home", "student", "business"].map(
+                (loanType) => (
+                  <Button
+                    key={loanType}
+                    variant="outline"
+                    size="sm"
+                    className="capitalize"
+                    onClick={() => navigate(`/schemes?type=${loanType}`)}
+                  >
+                    {t(
+                      `home.loanTypes.${loanType}`,
+                      `${loanType.charAt(0).toUpperCase() + loanType.slice(1)} Loans`,
+                    )}
+                  </Button>
+                ),
+              )}
             </div>
           </div>
         </div>
@@ -93,17 +106,47 @@ export default function HomePage() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Everything you need to find the perfect loan
+            {t(
+              "home.featuresHeading",
+              "Everything you need to find the perfect loan",
+            )}
           </h2>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {[
-              { icon: Search, title: "Comprehensive Search", desc: "Search all loan types" },
-              { icon: TrendingUp, title: "Side-by-Side Compare", desc: "Compare rates & fees" },
-              { icon: MessageSquare, title: "AI Chatbot", desc: "Evidence-based answers" },
-              { icon: Shield, title: "Verified Sources", desc: "Original bank documents" },
-              { icon: Bell, title: "Real-Time Alerts", desc: "Get notified on changes" },
-              { icon: Zap, title: "Export & Share", desc: "PDF & CSV export" },
+              {
+                icon: Search,
+                title: t("home.features.search.title", "Comprehensive Search"),
+                desc: t("home.features.search.desc", "Search all loan types"),
+              },
+              {
+                icon: TrendingUp,
+                title: t("home.features.compare.title", "Side-by-Side Compare"),
+                desc: t("home.features.compare.desc", "Compare rates & fees"),
+              },
+              {
+                icon: MessageSquare,
+                title: t("home.features.chatbot.title", "AI Chatbot"),
+                desc: t("home.features.chatbot.desc", "Evidence-based answers"),
+              },
+              {
+                icon: Shield,
+                title: t("home.features.verified.title", "Verified Sources"),
+                desc: t(
+                  "home.features.verified.desc",
+                  "Original bank documents",
+                ),
+              },
+              {
+                icon: Bell,
+                title: t("home.features.alerts.title", "Real-Time Alerts"),
+                desc: t("home.features.alerts.desc", "Get notified on changes"),
+              },
+              {
+                icon: Zap,
+                title: t("home.features.export.title", "Export & Share"),
+                desc: t("home.features.export.desc", "PDF & CSV export"),
+              },
             ].map((f, i) => (
               <Card
                 key={i}
@@ -125,11 +168,20 @@ export default function HomePage() {
       {/* ================= BANKS ================= */}
       <section className="py-20 bg-gray-50">
         <h2 className="text-3xl font-bold text-center mb-10">
-          Trusted by data from leading banks
+          {t("home.banksHeading", "Trusted by data from leading banks")}
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 max-w-5xl mx-auto">
-          {["HBL", "UBL", "MCB", "ABL", "Meezan", "Faysal", "Askari", "JS Bank"].map((b) => (
+          {[
+            "HBL",
+            "UBL",
+            "MCB",
+            "ABL",
+            "Meezan",
+            "Faysal",
+            "Askari",
+            "JS Bank",
+          ].map((b) => (
             <Card key={b} className="bank-card">
               <CardContent className="p-6 text-center">
                 <Building2 className="mx-auto mb-2 text-gray-400" />
@@ -144,16 +196,20 @@ export default function HomePage() {
       <section className="cta-section py-20 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white">
         <div className="text-center px-4">
           <h2 className="text-4xl font-bold mb-4">
-            Ready to find your perfect loan?
+            {t("home.ctaTitle", "Ready to find your perfect loan?")}
           </h2>
           <p className="mb-8 opacity-90">
-            Join thousands who trust CLICS for smart decisions
+            {t(
+              "home.ctaSubtitle",
+              "Join thousands who trust CLICS for smart decisions",
+            )}
           </p>
 
           <div className="flex gap-4 justify-center">
             <Button variants="default" className="bg-white ">
-        
-              <Link className="text-blue-700 hover:text-white " to="/schemes">Browse Loans</Link>
+              <Link className="text-blue-700 hover:text-white " to="/schemes">
+                {t("home.ctaBrowseLoans", "Browse Loans")}
+              </Link>
             </Button>
             <Button className="border border-white text-white bg-transparent">
               <Link to="/register">Create Free Account</Link>
@@ -162,5 +218,5 @@ export default function HomePage() {
         </div>
       </section>
     </main>
-  )
+  );
 }

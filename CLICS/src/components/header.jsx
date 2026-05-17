@@ -4,22 +4,26 @@ import { Menu, Search, User, Bell, X, MessageSquareText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Chatbot } from "./Chatbot";
 import { Input } from "../components/custom-ui/Input";
+import { useTranslation } from "react-i18next";
 
 
 export function Header() {
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showLangDropdown, setShowLangDropdown] = useState(false);
   const navigate = useNavigate();
   const [isChatOpen, setIsChatOpen] = useState(false); // Chat toggle state
+  const currentLanguage = i18n.language?.startsWith("ur") ? "ur" : "en";
 
   const navLinks = [
-    { path: "/", label: "Home" },
-    { path: "/schemes", label: "Schemes" },
-    { path: "/compare", label: "Compare" },
-    { path: "/currency", label: "Currency" },
-    { path: "/banks", label: "Pakistani Banks" },
-    { path: "/about", label: "About" },
-    { path: "/contact", label: "Contact" },
+    { path: "/", label: t("nav.home", "Home") },
+    { path: "/schemes", label: t("nav.schemes", "Schemes") },
+    { path: "/compare", label: t("nav.compare", "Compare") },
+    { path: "/currency", label: t("nav.currency", "Currency") },
+    { path: "/banks", label: t("nav.banks", "Pakistani Banks") },
+    { path: "/about", label: t("nav.about", "About") },
+    { path: "/contact", label: t("nav.contact", "Contact") },
   ];
 
   return (
@@ -76,6 +80,44 @@ export function Header() {
             <Bell size={20} />
           </button>
 
+          {/* Language Dropdown */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowLangDropdown(!showLangDropdown)}
+              className="hidden sm:flex items-center gap-1 rounded p-2 hover:bg-gray-100"
+            >
+              <span className="text-sm font-medium uppercase">
+                {currentLanguage}
+              </span>
+              <span className="text-xs">▾</span>
+            </button>
+            {showLangDropdown && (
+              <div className="absolute right-0 mt-2 w-36 bg-white border rounded shadow z-50">
+                <button
+                  type="button"
+                  onClick={() => {
+                    i18n.changeLanguage("en");
+                    setShowLangDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 ${currentLanguage === "en" ? "bg-gray-100 font-semibold" : "hover:bg-gray-50"}`}
+                >
+                  {t("language.english", "English")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    i18n.changeLanguage("ur");
+                    setShowLangDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 ${currentLanguage === "ur" ? "bg-gray-100 font-semibold" : "hover:bg-gray-50"}`}
+                >
+                  {t("language.urdu", "اردو")}
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* User Dropdown */}
           <button
             onClick={() => setShowDropdown(!showDropdown)}
@@ -91,21 +133,21 @@ export function Header() {
                 className="block px-4 py-2 hover:bg-gray-100"
                 onClick={() => setShowDropdown(false)}
               >
-                Dashboard
+                {t("user.dashboard", "Dashboard")}
               </Link>
               <Link
                 to="/watchlist"
                 className="block px-4 py-2 hover:bg-gray-100"
                 onClick={() => setShowDropdown(false)}
               >
-                Watchlist
+                {t("user.watchlist", "Watchlist")}
               </Link>
               <Link
                 to="/settings"
                 className="block px-4 py-2 hover:bg-gray-100"
                 onClick={() => setShowDropdown(false)}
               >
-                Settings
+                {t("user.settings", "Settings")}
               </Link>
               <hr />
               <Link
@@ -113,7 +155,7 @@ export function Header() {
                 className="block px-4 py-2 hover:bg-gray-100"
                 onClick={() => setShowDropdown(false)}
               >
-                Login
+                {t("user.login", "Login")}
               </Link>
             </div>
           )}
@@ -135,7 +177,9 @@ export function Header() {
         <div className="fixed inset-0 bg-black/40 z-50">
           <div className="absolute right-0 top-0 h-full w-64 bg-white p-6">
             <div className="flex justify-between items-center mb-6">
-              <span className="font-bold text-lg">Menu</span>
+              <span className="font-bold text-lg">
+                {t("header.menu", "Menu")}
+              </span>
               <button onClick={() => setIsOpen(false)}>
                 <X />
               </button>

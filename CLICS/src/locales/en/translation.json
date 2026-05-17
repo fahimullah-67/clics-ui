@@ -1,0 +1,149 @@
+﻿{
+  "welcome": "Welcome",
+  "search": "Search",
+  "submit": "Submit",
+  "language": {
+    "english": "English",
+    "urdu": "اردو"
+  },
+  "nav": {
+    "home": "Home",
+    "schemes": "Schemes",
+    "compare": "Compare",
+    "currency": "Currency",
+    "banks": "Pakistani Banks",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "home": {
+    "heroTitle": "Compare Banking Schemes",
+    "heroSubtitle": "Explore and compare banking schemes from Pakistan’s leading banks",
+    "searchPlaceholder": "Search for personal, car, home, student, or business loans...",
+    "featuresHeading": "Everything you need to find the perfect loan",
+    "features": {
+      "search": {
+        "title": "Comprehensive Search",
+        "desc": "Search all loan types"
+      },
+      "compare": {
+        "title": "Side-by-Side Compare",
+        "desc": "Compare rates & fees"
+      },
+      "chatbot": {
+        "title": "AI Chatbot",
+        "desc": "Evidence-based answers"
+      },
+      "verified": {
+        "title": "Verified Sources",
+        "desc": "Original bank documents"
+      },
+      "alerts": {
+        "title": "Real-Time Alerts",
+        "desc": "Get notified on changes"
+      },
+      "export": {
+        "title": "Export & Share",
+        "desc": "PDF & CSV export"
+      }
+    },
+    "loanTypes": {
+      "personal": "Personal Loans",
+      "car": "Car Loans",
+      "home": "Home Loans",
+      "student": "Student Loans",
+      "business": "Business Loans"
+    },
+    "ctaTitle": "Ready to find your perfect loan?",
+    "ctaSubtitle": "Join thousands who trust CLICS for smart decisions",
+    "ctaBrowseLoans": "Browse Loans",
+    "ctaCreateAccount": "Create Free Account"
+  },
+  "currency": {
+    "title": "Currency Converter",
+    "subtitle": "Real-time currency conversion with live exchange rates",
+    "convertHeading": "Convert Currency",
+    "amountPlaceholder": "Enter amount",
+    "convertButton": "Convert",
+    "convertedAmountLabel": "Converted Amount",
+    "exchangeRateLabel": "Exchange Rate:",
+    "quickConvertHeading": "Quick Convert to Favorites",
+    "historyHeading": "Conversion History",
+    "clearButton": "Clear",
+    "exchangeRatesHeading": "Current Exchange Rates",
+    "oneEquals": "1 {{from}} equals:",
+    "rateDisclaimer": "* Rates are indicative and may vary. Please confirm with your bank.",
+    "popularConversions": "Popular Conversions",
+    "approximateLabel": "≈ {{symbol}} {{amount}}",
+    "tipsHeading": "Currency Tips",
+    "tips": {
+      "updateRate": "• Exchange rates update every 5 minutes",
+      "addFavorites": "• Click ★ to add currencies to favorites",
+      "bankRates": "• Bank rates may differ from market rates",
+      "bestTime": "• Best time to exchange: Check trends"
+    }
+  },
+  "about": {
+    "pageTitle": "About CLICS",
+    "titleDescription": "Centralized Loan Information & Comparison System - Making loan comparison transparent and accessible for all Pakistanis",
+    "whatIsClics": "What is CLICS?",
+    "clicsDescription": "CLICS is an innovative web platform that aggregates loan information from all major Pakistani banks, making it easy for borrowers to compare and find the best loan options for their needs.",
+    "transparencyDescription": "Our system automatically collects and verifies loan data from bank websites and PDFs, storing the original sources with capture dates for complete transparency. Users can search, filter, and compare loans side-by-side, with our AI-powered chatbot providing personalized recommendations backed by real evidence.",
+    "loanTypesDescription": "Whether you're looking for a personal loan, car loan, home loan, student loan, or business financing, CLICS brings all the information you need to one place, saving you time and helping you make informed financial decisions.",
+    "features": {
+      "mission": {
+        "title": "Our Mission",
+        "description": "To empower Pakistani borrowers with transparent, verified loan information from all major banks in one centralized platform, making financial decisions easier and more informed."
+      },
+      "vision": {
+        "title": "Our Vision",
+        "description": "To become Pakistan's most trusted loan comparison platform, setting the standard for transparency and accessibility in financial services."
+      },
+      "team": {
+        "title": "Our Team",
+        "description": "CLICS is a Final Year Project developed by students at the University of Mianwali: Abdullah Khawar, Sijjad Khan, and Fahim Ullah."
+      },
+      "values": {
+        "title": "Our Values",
+        "description": "Transparency, accuracy, and user empowerment. We verify all data sources and provide evidence-backed recommendations through our AI assistant."
+      }
+    },
+    "teamHeading": "Meet the talented developers behind CLICS - students from the University of Mianwali",
+    "technologyHeading": "Technology",
+    "technologyDescription": "CLICS is built using modern web technologies including React for the frontend, Node.js for the backend, and MongoDB for data storage. We use advanced web scraping tools to collect loan data, vector databases for semantic search, and large language models for our AI chatbot that provides evidence-backed recommendations in both English and Urdu.",
+    "contactHeading": "Questions or Feedback?",
+    "contactDescription": "We'd love to hear from you. Get in touch with our team.",
+    "contactButton": "Contact Us"
+  },
+  "currency": {
+    "amountLabel": "Amount",
+    "fromLabel": "From",
+    "toLabel": "To",
+    "fromPlaceholder": "Select source currency",
+    "toPlaceholder": "Select target currency",
+    "clearHistoryConfirm": "Clear all conversion history?"
+  },
+  "user": {
+    "dashboard": "Dashboard",
+    "watchlist": "Watchlist",
+    "settings": "Settings",
+    "login": "Login"
+  },
+  "header": {
+    "menu": "Menu"
+  },
+  "footer": {
+    "description": "Centralized Loan Information & Comparison System - Your trusted source for comparing loans from Pakistani banks.",
+    "quickLinks": "Quick Links",
+    "browseLoans": "Browse Loans",
+    "compare": "Compare",
+    "banks": "Banks",
+    "currencyConverter": "Currency Converter",
+    "resources": "Resources",
+    "aboutUs": "About Us",
+    "contact": "Contact",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "connect": "Connect",
+    "copyright": "© 2025 CLICS. All rights reserved. | University of Mianwali Final Year Project"
+  }
+}

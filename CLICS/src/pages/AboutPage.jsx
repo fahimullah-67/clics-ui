@@ -1,11 +1,13 @@
 "use client"
 
 import { useEffect, useRef } from "react"
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "../components/custom-ui/Card"
 import { Target, Users, Eye, Award, Mail, Linkedin, Github } from "lucide-react"
 import gsap from "gsap"
 
 export default function AboutPage() {
+  const { t } = useTranslation();
   const containerRef = useRef(null)
   const featuresRef = useRef(null)
   const teamRef = useRef(null)
@@ -35,29 +37,33 @@ export default function AboutPage() {
   const features = [
     {
       icon: Target,
+      key: "mission",
       title: "Our Mission",
       description:
         "To empower Pakistani borrowers with transparent, verified loan information from all major banks in one centralized platform, making financial decisions easier and more informed.",
     },
     {
       icon: Eye,
+      key: "vision",
       title: "Our Vision",
       description:
         "To become Pakistan's most trusted loan comparison platform, setting the standard for transparency and accessibility in financial services.",
     },
     {
       icon: Users,
+      key: "team",
       title: "Our Team",
       description:
         "CLICS is a Final Year Project developed by students at the University of Mianwali: Abdullah Khawar, Sijjad Khan, and Fahim Ullah.",
     },
     {
       icon: Award,
+      key: "values",
       title: "Our Values",
       description:
         "Transparency, accuracy, and user empowerment. We verify all data sources and provide evidence-backed recommendations through our AI assistant.",
     },
-  ]
+  ];
 
   const teamMembers = [
     {
@@ -93,36 +99,41 @@ export default function AboutPage() {
     <main className="flex-1">
       <div className="border-b bg-gray-50 dark:bg-gray-900" ref={containerRef}>
         <div className="container mx-auto px-4 py-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">About CLICS</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            {t("about.pageTitle", "About CLICS")}
+          </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl">
-            Centralized Loan Information & Comparison System - Making loan
-            comparison transparent and accessible for all Pakistanis
+            {t(
+              "about.titleDescription",
+              "Centralized Loan Information & Comparison System - Making loan comparison transparent and accessible for all Pakistanis",
+            )}
           </p>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold mb-6">What is CLICS?</h2>
+          <h2 className="text-3xl font-bold mb-6">
+            {t("about.whatIsClics", "What is CLICS?")}
+          </h2>
           <div className="prose prose-lg max-w-none text-gray-600 dark:text-gray-400 leading-relaxed space-y-4">
             <p>
-              CLICS is an innovative web platform that aggregates loan
-              information from all major Pakistani banks, making it easy for
-              borrowers to compare and find the best loan options for their
-              needs.
+              {t(
+                "about.clicsDescription",
+                "CLICS is an innovative web platform that aggregates loan information from all major Pakistani banks, making it easy for borrowers to compare and find the best loan options for their needs.",
+              )}
             </p>
             <p>
-              Our system automatically collects and verifies loan data from bank
-              websites and PDFs, storing the original sources with capture dates
-              for complete transparency. Users can search, filter, and compare
-              loans side-by-side, with our AI-powered chatbot providing
-              personalized recommendations backed by real evidence.
+              {t(
+                "about.transparencyDescription",
+                "Our system automatically collects and verifies loan data from bank websites and PDFs, storing the original sources with capture dates for complete transparency. Users can search, filter, and compare loans side-by-side, with our AI-powered chatbot providing personalized recommendations backed by real evidence.",
+              )}
             </p>
             <p>
-              Whether you're looking for a personal loan, car loan, home loan,
-              student loan, or business financing, CLICS brings all the
-              information you need to one place, saving you time and helping you
-              make informed financial decisions.
+              {t(
+                "about.loanTypesDescription",
+                "Whether you're looking for a personal loan, car loan, home loan, student loan, or business financing, CLICS brings all the information you need to one place, saving you time and helping you make informed financial decisions.",
+              )}
             </p>
           </div>
         </div>
@@ -140,10 +151,13 @@ export default function AboutPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg mb-2">
-                      {feature.title}
+                      {t(`about.features.${feature.key}.title`, feature.title)}
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                      {feature.description}
+                      {t(
+                        `about.features.${feature.key}.description`,
+                        feature.description,
+                      )}
                     </p>
                   </div>
                 </div>
@@ -153,10 +167,17 @@ export default function AboutPage() {
         </div>
 
         <div className="max-w-5xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold mb-8 text-center">Our Team</h2>
+          <h2 className="text-3xl font-bold mb-8 text-center">
+            {t(
+              "about.teamHeading",
+              "Meet the talented developers behind CLICS - students from the University of Mianwali",
+            )}
+          </h2>
           <p className="text-center text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
-            Meet the talented developers behind CLICS - students from the
-            University of Mianwali
+            {t(
+              "about.teamHeading",
+              "Meet the talented developers behind CLICS - students from the University of Mianwali",
+            )}
           </p>
           <div className="grid md:grid-cols-3 gap-8" ref={teamRef}>
             {teamMembers.map((member, idx) => (
@@ -227,15 +248,15 @@ export default function AboutPage() {
         </div>
 
         <div className="max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold mb-6">Technology</h2>
+          <h2 className="text-3xl font-bold mb-6">
+            {t("about.technologyHeading", "Technology")}
+          </h2>
           <div className="text-gray-600 dark:text-gray-400 leading-relaxed space-y-4">
             <p>
-              CLICS is built using modern web technologies including React for
-              the frontend, Node.js for the backend, and MongoDB for data
-              storage. We use advanced web scraping tools to collect loan data,
-              vector databases for semantic search, and large language models
-              for our AI chatbot that provides evidence-backed recommendations
-              in both English and Urdu.
+              {t(
+                "about.technologyDescription",
+                "CLICS is built using modern web technologies including React for the frontend, Node.js for the backend, and MongoDB for data storage. We use advanced web scraping tools to collect loan data, vector databases for semantic search, and large language models for our AI chatbot that provides evidence-backed recommendations in both English and Urdu.",
+              )}
             </p>
           </div>
         </div>
@@ -244,16 +265,19 @@ export default function AboutPage() {
           <Card className="bg-blue-600 text-white border-0">
             <CardContent className="p-8 text-center">
               <h2 className="text-2xl font-bold mb-2">
-                Questions or Feedback?
+                {t("about.contactHeading", "Questions or Feedback?")}
               </h2>
               <p className="mb-6 opacity-90">
-                We'd love to hear from you. Get in touch with our team.
+                {t(
+                  "about.contactDescription",
+                  "We'd love to hear from you. Get in touch with our team.",
+                )}
               </p>
               <a
                 href="/contact"
                 className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white disabled:pointer-events-none disabled:opacity-50 bg-white text-blue-600 hover:bg-gray-100 h-10 px-8"
               >
-                Contact Us
+                {t("about.contactButton", "Contact Us")}
               </a>
             </CardContent>
           </Card>
