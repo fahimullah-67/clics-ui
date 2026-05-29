@@ -187,7 +187,7 @@ export function Chatbot({ isOpen, setIsOpen }) {
       ${
         isFullScreen
           ? "inset-0 w-screen h-screen rounded-0"
-          : "bottom-4 right-4 w-[400px] h-[600px] rounded-2xl"
+          : "bottom-4 right-4 w-[500px] h-[600px] rounded-2xl"
       }`}
     >
       {/* SIDEBAR */}
@@ -299,11 +299,7 @@ export function Chatbot({ isOpen, setIsOpen }) {
                       : "bg-white text-gray-800 border border-gray-100 rounded-tl-none"
                   }`}
                 >
-                  {msg.type === "user" ? (
-                    msg.text
-                  ) : (
-                    formatBotMessage(msg.text)
-                  )}
+                  {msg.type === "user" ? msg.text : formatBotMessage(msg.text)}
                 </div>
               </div>
             </div>
