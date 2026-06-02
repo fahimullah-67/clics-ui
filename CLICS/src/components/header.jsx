@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom"
-import { useState } from "react"
+import { Link, NavLink } from "react-router-dom";
+import { useState } from "react";
 import { Menu, Search, User, Bell, X, MessageSquareText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Chatbot } from "./chatbot";
@@ -30,7 +30,7 @@ export function Header() {
     { path: "/contact", label: t("nav.contact", "Contact") },
   ];
 
- const handleLogout = async () => {
+  const handleLogout = async () => {
     try {
       await api.post("/user-logout");
       logout();
