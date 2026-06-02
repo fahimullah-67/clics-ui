@@ -30,7 +30,7 @@ export default function CurrencyPage() {
 
   const exchangeRates = {
     PKR: {
-      INR: 2.5,
+      INR: 0.3423,
       USD: 0.0036,
       EUR: 0.0031,
       GBP: 0.0027,
