@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-
 import { LoanCard } from "../components/loan-card";
 import { Button } from "../components/custom-ui/Button";
 import { Input } from "../components/custom-ui/Input";
@@ -21,10 +20,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/custom-ui/Select";
-
-import { Activity, ArrowUpDown, Filter, Search } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  Search,
+  ArrowUpDown,
+  Activity,
+} from "lucide-react";
 import gsap from "gsap";
-import api from "../utils/axios"; // axios instance
+import api from "../utils/axios";
 
 export default function SchemesPage() {
   const [searchParams] = useSearchParams();
@@ -32,7 +37,6 @@ export default function SchemesPage() {
 
   const [loans, setLoans] = useState([]);
   const [banks, setBanks] = useState([]);
-  // Add this to your useState section
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState([]);
@@ -43,18 +47,20 @@ export default function SchemesPage() {
   const [showFilters, setShowFilters] = useState(true);
   const [hasInitialized, setHasInitialized] = useState(false);
 
-  const gridRef = useRef(null);
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
+  const gridRef = useRef(null);
   const loanTypes = ["personal", "car", "home", "student", "business"];
 
+  // Fetch loans
   useEffect(() => {
     const fetchLoans = async () => {
       setLoading(true);
       try {
         const res = await api.get("/loanSchemes/getAll");
-
         const schemes = res.data.data.allLoanScheme;
-
         const formatted = schemes.map((scheme) => ({
           id: scheme._id,
           name: scheme.schemeName,
@@ -71,13 +77,10 @@ export default function SchemesPage() {
           ],
           verified: scheme.isVerified,
         }));
-
         setLoans(formatted);
-
         const uniqueBanks = [
           ...new Set(formatted.map((loan) => loan.bank)),
         ].filter(Boolean);
-
         setBanks(uniqueBanks);
       } catch (error) {
         console.log("Loan fetch error", error);
@@ -85,24 +88,16 @@ export default function SchemesPage() {
         setLoading(false);
       }
     };
-
     fetchLoans();
   }, []);
 
   const handleCompare = async () => {
     try {
       setLoading(true);
-      console.debug("Comparing schemes with IDs:", compareList);
       const res = await api.post("schemes/comparison", { ids: compareList });
-      console.debug("Comparison response:", res);
-
       const comparisonId = res.data?._id || res.data?.data?._id;
-      if (comparisonId) {
-        // Navigate to the compare page with the saved comparison ID
-        navigate(`/compare?comparisonId=${comparisonId}`);
-      } else {
-        console.warn("No comparison ID returned", comparisonId, res);
-      }
+      if (comparisonId) navigate(`/compare?comparisonId=${comparisonId}`);
+      else alert("Failed to create comparison");
     } catch (err) {
       console.error(err);
       alert("Failed to create comparison");
@@ -115,24 +110,23 @@ export default function SchemesPage() {
     setSelectedTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
     );
+    setCurrentPage(1);
   };
 
   const handleBankToggle = (bank) => {
     setSelectedBanks((prev) =>
       prev.includes(bank) ? prev.filter((b) => b !== bank) : [...prev, bank],
     );
+    setCurrentPage(1);
   };
 
   const handleCompareToggle = (id) => {
     setCompareList((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((item) => item !== id);
-      } else if (prev.length < 4) {
+      if (prev.includes(id)) return prev.filter((item) => item !== id);
+      if (prev.length < 4) {
         const newLoan = loans.find((l) => l.id === id);
-
         if (prev.length > 0) {
           const firstSelectedLoan = loans.find((l) => l.id === prev[0]);
-
           if (
             newLoan &&
             firstSelectedLoan &&
@@ -144,13 +138,11 @@ export default function SchemesPage() {
             return prev;
           }
         }
-
         return [...prev, id];
       } else {
         alert("You can only compare up to 4 loans.");
+        return prev;
       }
-
-      return prev;
     });
   };
 
@@ -159,6 +151,7 @@ export default function SchemesPage() {
     setSelectedBanks([]);
     setAmountRange([0, 50000000]);
     setSearchQuery("");
+    setCurrentPage(1);
   };
 
   useEffect(() => {
@@ -166,46 +159,43 @@ export default function SchemesPage() {
       const typeParam = searchParams.get("type");
       const bankParam = searchParams.get("bank");
       const searchParam = searchParams.get("search");
-
       if (typeParam) setSelectedTypes([typeParam]);
       if (bankParam) setSelectedBanks([bankParam]);
       if (searchParam) setSearchQuery(searchParam);
-
       setHasInitialized(true);
     }
   }, [searchParams, hasInitialized]);
 
+  // Animation when filtered results change
   useEffect(() => {
     if (gridRef.current && hasInitialized) {
       gsap.fromTo(
         gridRef.current.children,
         { opacity: 0, y: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          stagger: 0.08,
-          ease: "power2.out",
-        },
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: "power2.out" },
       );
     }
-  }, [selectedTypes, selectedBanks, searchQuery, amountRange, sortBy]);
+  }, [
+    selectedTypes,
+    selectedBanks,
+    searchQuery,
+    amountRange,
+    sortBy,
+    currentPage,
+  ]);
 
+  // Filter and sort
   const filteredLoans = loans.filter((loan) => {
     const matchesSearch =
       loan.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       loan.bank.toLowerCase().includes(searchQuery.toLowerCase()) ||
       loan.type.toLowerCase().includes(searchQuery.toLowerCase());
-
     const matchesType =
       selectedTypes.length === 0 || selectedTypes.includes(loan.type);
-
     const matchesBank =
       selectedBanks.length === 0 || selectedBanks.includes(loan.bank);
-
     const matchesAmount =
       loan.minAmount >= amountRange[0] && loan.minAmount <= amountRange[1];
-
     return matchesSearch && matchesType && matchesBank && matchesAmount;
   });
 
@@ -220,6 +210,18 @@ export default function SchemesPage() {
     }
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(sortedLoans.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedLoans = sortedLoans.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
+
+  const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
+
   const formatAmount = (amount) =>
     new Intl.NumberFormat("en-PK", {
       style: "currency",
@@ -228,111 +230,149 @@ export default function SchemesPage() {
       notation: "compact",
     }).format(amount);
 
-  if (loading) {
+  // Loading skeleton
+  if (loading && loans.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-slate-600">Loading your Scheme Loan...</p>
-        <Activity className="h-8 w-8 animate-spin text-blue-600" />
+        <div className="text-center">
+          <Activity className="h-10 w-10 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-slate-600">Loading loan schemes...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900">
       <main className="flex-1">
-        {/* HEADER */}
-        <div className="bg-white border-b">
-          <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold">Banking Schemes</h1>
-            <p className="text-gray-600">Explore and compare loan schemes</p>
+        {/* Header - modern gradient */}
+        <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white">
+          <div className="container mx-auto px-4 py-12">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+              Banking Schemes
+            </h1>
+            <p className="text-blue-100 mt-2 text-lg">
+              Explore and compare loan schemes from Pakistan's top banks
+            </p>
           </div>
         </div>
 
         <div className="container mx-auto px-4 py-8">
-          <div className="grid lg:grid-cols-[280px_1fr] gap-8">
-            {/* FILTERS */}
+          <div className="grid lg:grid-cols-[300px_1fr] gap-8">
+            {/* FILTERS SIDEBAR - now scrollable */}
             <aside className={`${showFilters ? "block" : "hidden"} lg:block`}>
-              <Card className="sticky top-20">
-                <CardHeader>
-                  <div className="flex justify-between">
-                    <CardTitle>Filters</CardTitle>
-                    <Button variant="ghost" size="sm" onClick={clearFilters}>
-                      Clear
+              <Card className="sticky top-24 shadow-md border-0 rounded-2xl overflow-hidden">
+                <CardHeader className="bg-white border-b">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-xl font-bold flex items-center gap-2">
+                      <Filter className="h-5 w-5 text-blue-600" />
+                      Filters
+                    </CardTitle>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearFilters}
+                      className="text-blue-600 hover:text-blue-700"
+                    >
+                      Clear all
                     </Button>
                   </div>
                 </CardHeader>
-
-                <CardContent className="space-y-6">
-                  {/* TYPES */}
+                <CardContent className="space-y-6 p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+                  {/* Loan Type */}
                   <div>
-                    <Label className="font-semibold mb-3 block">
+                    <Label className="font-semibold text-gray-700 mb-3 block">
                       Loan Type
                     </Label>
-                    {loanTypes.map((type) => (
-                      <div key={type} className="flex gap-2">
-                        <Checkbox
-                          checked={selectedTypes.includes(type)}
-                          onCheckedChange={() => handleTypeToggle(type)}
-                        />
-                        <label className="capitalize">{type}</label>
-                      </div>
-                    ))}
+                    <div className="space-y-2">
+                      {loanTypes.map((type) => (
+                        <div key={type} className="flex items-center gap-2">
+                          <Checkbox
+                            id={`type-${type}`}
+                            checked={selectedTypes.includes(type)}
+                            onCheckedChange={() => handleTypeToggle(type)}
+                          />
+                          <label
+                            htmlFor={`type-${type}`}
+                            className="text-sm capitalize cursor-pointer"
+                          >
+                            {type}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
-                  {/* BANKS */}
+                  {/* Banks - scrollable if many */}
                   <div>
-                    <Label className="font-semibold mb-3 block">Banks</Label>
-                    {banks.map((bank) => (
-                      <div key={bank} className="flex gap-2">
-                        <Checkbox
-                          checked={selectedBanks.includes(bank)}
-                          onCheckedChange={() => handleBankToggle(bank)}
-                        />
-                        <label>{bank}</label>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* AMOUNT */}
-                  <div>
-                    <Label className="font-semibold mb-3 block">
-                      Salary Required
+                    <Label className="font-semibold text-gray-700 mb-3 block">
+                      Banks
                     </Label>
+                    <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+                      {banks.map((bank) => (
+                        <div key={bank} className="flex items-center gap-2">
+                          <Checkbox
+                            id={`bank-${bank}`}
+                            checked={selectedBanks.includes(bank)}
+                            onCheckedChange={() => handleBankToggle(bank)}
+                          />
+                          <label
+                            htmlFor={`bank-${bank}`}
+                            className="text-sm cursor-pointer"
+                          >
+                            {bank}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
+                  {/* Salary Required */}
+                  <div>
+                    <Label className="font-semibold text-gray-700 mb-3 block">
+                      Min. Salary Required
+                    </Label>
                     <Slider
                       min={0}
                       max={500000}
                       step={5000}
                       value={amountRange}
                       onValueChange={setAmountRange}
+                      className="my-4"
                     />
-
-                    <p className="text-sm text-gray-500 mt-2">
-                      {formatAmount(amountRange[0])} -{" "}
-                      {formatAmount(amountRange[1])}
-                    </p>
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>{formatAmount(amountRange[0])}</span>
+                      <span>{formatAmount(amountRange[1])}</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </aside>
 
-            {/* CONTENT */}
+            {/* MAIN CONTENT */}
             <div className="space-y-6">
-              {/* SEARCH */}
-              <div className="flex gap-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-3 h-4 w-4" />
-
+              {/* Search & Sort Bar */}
+              <div className="flex flex-wrap gap-3 items-center">
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
-                    className="pl-9"
-                    placeholder="Search schemes..."
+                    className="pl-9 bg-white rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-300"
+                    placeholder="Search by name, bank or type..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
                   />
                 </div>
-
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="`w-[180px]`">
+                <Select
+                  value={sortBy}
+                  onValueChange={(val) => {
+                    setSortBy(val);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <SelectTrigger className="w-[190px] bg-white rounded-xl">
                     <ArrowUpDown className="mr-2 h-4 w-4" />
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
@@ -344,43 +384,43 @@ export default function SchemesPage() {
                     <SelectItem value="interest-high">
                       Interest: High to Low
                     </SelectItem>
-                    <SelectItem value="amount-low">
-                      Amount: Low to High
-                    </SelectItem>
-                    <SelectItem value="amount-high">
-                      Amount: High to Low
-                    </SelectItem>
                   </SelectContent>
                 </Select>
-
                 <Button
                   variant="outline"
                   size="icon"
-                  className="lg:hidden"
+                  className="lg:hidden rounded-xl"
                   onClick={() => setShowFilters(!showFilters)}
                 >
                   <Filter className="h-4 w-4" />
                 </Button>
               </div>
 
-              {/* RESULT COUNT */}
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-600">
-                  Showing {sortedLoans.length} of {loans.length} schemes
+              {/* Result count & Compare button */}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm text-gray-500">
+                  Showing{" "}
+                  <span className="font-semibold text-gray-700">
+                    {paginatedLoans.length}
+                  </span>{" "}
+                  of <span className="font-semibold">{sortedLoans.length}</span>{" "}
+                  schemes
                 </p>
-
                 {compareList.length > 0 && (
-                  <Button onClick={handleCompare} disabled={loading}>
-                    {compareList.length} Scheme
-                    {compareList.length > 1 ? "s" : ""}
-                    {loading ? "Comparing..." : "Compare Now"}
+                  <Button
+                    onClick={handleCompare}
+                    disabled={loading}
+                    className="bg-blue-600 hover:bg-blue-700 rounded-full px-5"
+                  >
+                    Compare {compareList.length}{" "}
+                    {compareList.length === 1 ? "Scheme" : "Schemes"}
                   </Button>
                 )}
               </div>
 
-              {/* LOAN CARDS */}
+              {/* Loan Cards Grid */}
               <div ref={gridRef} className="grid md:grid-cols-2 gap-6">
-                {sortedLoans.map((loan) => (
+                {paginatedLoans.map((loan) => (
                   <LoanCard
                     key={loan.id}
                     loan={loan}
@@ -389,12 +429,63 @@ export default function SchemesPage() {
                   />
                 ))}
               </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 py-8">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="rounded-full"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <div className="flex gap-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) pageNum = i + 1;
+                      else if (currentPage <= 3) pageNum = i + 1;
+                      else if (currentPage >= totalPages - 2)
+                        pageNum = totalPages - 4 + i;
+                      else pageNum = currentPage - 2 + i;
+                      if (pageNum > 0 && pageNum <= totalPages) {
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={
+                              currentPage === pageNum ? "default" : "outline"
+                            }
+                            size="sm"
+                            onClick={() => goToPage(pageNum)}
+                            className={`w-9 h-9 rounded-full ${currentPage === pageNum ? "bg-blue-600" : ""}`}
+                          >
+                            {pageNum}
+                          </Button>
+                        );
+                      }
+                      return null;
+                    })}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="rounded-full"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
+        {/* Sticky Compare Bar (mobile) */}
         {compareList.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-blue-600 shadow-lg z-40   lg:hidden">
+          <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-blue-600 shadow-lg z-40 lg:hidden">
             <div className="container mx-auto px-4 py-4">
               <div className="flex items-center justify-between gap-4">
                 <p className="text-sm font-medium">
@@ -411,12 +502,10 @@ export default function SchemesPage() {
                   </Button>
                   <Button
                     size="sm"
-                    asChild
+                    onClick={handleCompare}
                     className="bg-blue-600 hover:bg-blue-700"
                   >
-                    <Link to={`/compare?ids=${compareList.join(",")}`}>
-                      Compare Now
-                    </Link>
+                    Compare Now
                   </Button>
                 </div>
               </div>

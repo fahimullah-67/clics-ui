@@ -22,6 +22,7 @@ import ReviewsPage from "./pages/ReviewsPage"
 import LoanCheckerPage from "./pages/LoanCheckerPage"
 import NotificationsPage from "./pages/NotificationsPage"
 import HelpPage from "./pages/HelpPage"
+
 import SettingsPage from "./pages/SettingsPage"
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";

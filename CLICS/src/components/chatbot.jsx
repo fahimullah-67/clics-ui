@@ -12,44 +12,23 @@ import {
 } from "lucide-react";
 import api from "../utils/axios";
 
-// ✅ Complete and correct formatBotMessage
 function formatBotMessage(text) {
   // 1. Convert **bold** to <strong>
   let html = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-  
-  // 2. Split into lines for processing
+
+  // 2. Convert URLs to a clean, compact button (raw HTML uses 'class', not 'className')
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  html = html.replace(urlRegex, (url) => {
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-3 rounded-lg transition-colors shadow-sm my-1 text-sm no-underline">🔗 View Scheme Details →</a>`;
+  });
+
+  // 3. Split into lines and handle bullet lists (unchanged)
   const lines = html.split("\n");
   let inList = false;
   const processed = [];
-  
+
   for (let line of lines) {
     const trimmed = line.trim();
-    
-    // Check if this line is a standalone URL
-    const urlMatch = trimmed.match(/^(https?:\/\/[^\s]+)$/);
-    if (urlMatch) {
-      // If we were in a list, close it
-      if (inList) {
-        processed.push("</ul>");
-        inList = false;
-      }
-      const url = urlMatch[1];
-      // Replace with a button-like link
-      processed.push(
-        `<div class="my-2">
-          <a href="${url}" target="_blank" rel="noopener noreferrer"
-             class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors shadow-sm">
-            🔗 View Scheme Details
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-            </svg>
-          </a>
-        </div>`
-      );
-      continue;
-    }
-    
-    // Handle bullet list items
     if (trimmed.startsWith("- ")) {
       if (!inList) {
         processed.push("<ul class='list-disc pl-5 my-1'>");
@@ -69,7 +48,7 @@ function formatBotMessage(text) {
     }
   }
   if (inList) processed.push("</ul>");
-  
+
   return <div dangerouslySetInnerHTML={{ __html: processed.join("") }} />;
 }
 
@@ -89,6 +68,7 @@ export function Chatbot({ isOpen, setIsOpen }) {
     }
   }, [messages]);
 
+  // Load chat history on mount
   useEffect(() => {
     const fetchHistory = async () => {
       try {
@@ -140,13 +120,15 @@ export function Chatbot({ isOpen, setIsOpen }) {
     const question = input;
     setInput("");
 
-    const chatHistoryForAI = messages.map(msg => ({
+    // Prepare chat history for AI context
+    const chatHistoryForAI = messages.map((msg) => ({
       role: msg.type,
-      content: msg.text
+      content: msg.text,
     }));
     chatHistoryForAI.push({ role: "user", content: question });
 
     try {
+      // 1. Get AI response
       const aiRes = await fetch("http://127.0.0.1:8000/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -157,11 +139,22 @@ export function Chatbot({ isOpen, setIsOpen }) {
       const botMsg = { id: Date.now() + 1, type: "bot", text: aiData.answer };
       setMessages((prev) => [...prev, botMsg]);
 
+      // 2. Save to MongoDB (with or without chatId)
       const payload = { question, answer: aiData.answer };
       if (currentChatId) payload.chatId = currentChatId;
+
       const mongoRes = await api.post("chat/ask", payload);
       console.log("Saved to DB:", mongoRes.data);
 
+      // ✅ FIX: If this was a new chat (no chatId), capture the new chat ID from response
+      if (!currentChatId && mongoRes.data && mongoRes.data.chatId) {
+        setCurrentChatId(mongoRes.data.chatId);
+      } else if (!currentChatId && mongoRes.data && mongoRes.data._id) {
+        // Some backends return _id instead
+        setCurrentChatId(mongoRes.data._id);
+      }
+
+      // 3. Refresh sidebar history (so new chat appears)
       const refreshed = await api.get("chat/");
       setChatHistory(refreshed.data.data);
     } catch (error) {
