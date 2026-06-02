@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 import { useState } from "react"
 import { Menu, Search, User, Bell, X, MessageSquareText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Chatbot } from "./Chatbot";
+import { Chatbot } from "./chatbot";
 import { Input } from "../components/custom-ui/Input";
 import { useTranslation } from "react-i18next";
 
