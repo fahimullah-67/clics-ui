@@ -1,6 +1,9 @@
 import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
-import { Menu, Search, User, Bell, X, MessageSquareText } from "lucide-react";
+import { Menu, Search, User, Bell, X, MessageSquareText,  LayoutDashboard, 
+  Heart, 
+  Settings, 
+  LogOut  } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Chatbot } from "./chatbot";
 import { Input } from "../components/custom-ui/Input";
@@ -77,9 +80,7 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Right Actions */}
           <div className="flex items-center gap-3 relative">
-            {/* Chatbot Toggle */}
             <button
               onClick={() => setIsChatOpen(!isChatOpen)}
               className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-all relative"
@@ -92,7 +93,6 @@ export function Header() {
               </span>
             </button>
 
-            {/* Notifications */}
             <button
               className="hidden sm:flex p-2 hover:bg-gray-100 rounded-full transition-colors"
               onClick={() => navigate("/notifications")}
@@ -101,7 +101,6 @@ export function Header() {
               <Bell size={20} className="text-gray-600" />
             </button>
 
-            {/* Language Dropdown */}
             <div className="relative">
               <button
                 type="button"
